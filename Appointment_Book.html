@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book an Appointment - Future Secure Providers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Tamil:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --white:#ffffff;
+  --accent-blue:#d4af37;
+  --text-muted:rgba(255,255,255,.68);
+  --bg-1:#051410;
+  --bg-2:#061810;
+  --bg-3:#081a12;
+  --card:rgba(8,26,18,.72);
+  --border:rgba(212,175,55,.22);
+  --input-bg:rgba(255,255,255,.055);
+  --error:#ff8b8b;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  min-height:100%;
+}
+
+body{
+  font-family:"Noto Sans Tamil",Arial,sans-serif;
+  background:linear-gradient(135deg,var(--bg-1) 0%,var(--bg-2) 50%,var(--bg-3) 100%);
+  color:var(--white);
+}
+
+.appointment-form-overlay{
+  min-height:100vh;
+  background:linear-gradient(135deg,#051410 0%,#061810 50%,#081a12 100%);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.appointment-form-container{
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  background:linear-gradient(135deg,#051410 0%,#061810 50%,#081a12 100%);
+}
+
+.appointment-form-header{
+  padding:16px 20px;
+  border-bottom:1px solid rgba(212,175,55,.2);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+  background:rgba(8,26,18,.8);
+}
+
+.appointment-form-close{
+  padding:8px 16px;
+  background:transparent;
+  border:1px solid rgba(212,175,55,.3);
+  border-radius:6px;
+  font-size:13px;
+  font-weight:600;
+  color:var(--white);
+  cursor:pointer;
+  transition:all .2s ease;
+}
+
+.appointment-form-close:hover{
+  background:rgba(212,175,55,.1);
+  border-color:var(--accent-blue);
+}
+
+.appointment-form-body{
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  background:linear-gradient(135deg,#051410 0%,#061810 50%,#081a12 100%);
+  scrollbar-width:thin;
+  scrollbar-color:var(--accent-blue) transparent;
+}
+
+.appointment-form-body::-webkit-scrollbar{width:6px}
+.appointment-form-body::-webkit-scrollbar-track{background:transparent}
+.appointment-form-body::-webkit-scrollbar-thumb{
+  background:var(--accent-blue);
+  border-radius:3px;
+}
+
+.appointment-form-wrapper{
+  max-width:900px;
+  margin:0 auto;
+  padding:40px 20px;
+  width:100%;
+}
+
+.appointment-form-title{
+  margin:0 0 10px;
+  font-size:36px;
+  line-height:1.25;
+  font-weight:800;
+  letter-spacing:-.5px;
+  color:var(--white);
+}
+
+.appointment-form-subtitle{
+  margin:0 0 38px;
+  max-width:720px;
+  color:var(--text-muted);
+  font-size:15px;
+  line-height:1.75;
+}
+
+.appointment-section{
+  background:rgba(8,26,18,.62);
+  border:1px solid rgba(212,175,55,.18);
+  border-radius:8px;
+  padding:26px;
+  margin-bottom:20px;
+}
+
+.appointment-section-title{
+  margin:0 0 20px;
+  font-size:18px;
+  font-weight:700;
+  color:var(--white);
+}
+
+.appointment-fields{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:20px;
+}
+
+.appointment-field{
+  min-width:0;
+}
+
+.appointment-field.full-width{
+  grid-column:1/-1;
+}
+
+.field-label{
+  display:block;
+  margin-bottom:8px;
+  font-size:13px;
+  font-weight:600;
+  color:rgba(255,255,255,.88);
+}
+
+.required{color:var(--accent-blue)}
+
+.form-input,
+.form-select,
+.form-textarea{
+  width:100%;
+  border:1px solid rgba(212,175,55,.24);
+  border-radius:6px;
+  background:var(--input-bg);
+  color:var(--white);
+  font-family:inherit;
+  font-size:14px;
+  outline:none;
+  transition:border-color .2s ease,background .2s ease,box-shadow .2s ease;
+}
+
+.form-input,
+.form-select{
+  height:48px;
+  padding:0 13px;
+}
+
+.form-textarea{
+  min-height:120px;
+  padding:13px;
+  resize:vertical;
+  line-height:1.6;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder{
+  color:rgba(255,255,255,.38);
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus{
+  border-color:var(--accent-blue);
+  background:rgba(255,255,255,.07);
+  box-shadow:0 0 0 3px rgba(212,175,55,.08);
+}
+
+.form-select{
+  appearance:auto;
+}
+
+input[type="date"]{
+  color-scheme:dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator{
+  width:20px;
+  height:20px;
+  cursor:pointer;
+  opacity:1;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d4af37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E") center/20px no-repeat;
+}
+
+.form-select option{
+  background:#081a12;
+  color:#fff;
+}
+
+.time-select-group{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:8px;
+}
+
+.error-message{
+  min-height:18px;
+  margin-top:5px;
+  color:var(--error);
+  font-size:11px;
+  line-height:1.4;
+}
+
+.consent-box{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+  padding:16px;
+  margin:2px 0 0;
+  border:1px solid rgba(212,175,55,.18);
+  border-radius:6px;
+  background:rgba(255,255,255,.035);
+}
+
+.consent-box input{
+  width:17px;
+  height:17px;
+  margin:2px 0 0;
+  accent-color:var(--accent-blue);
+  flex-shrink:0;
+}
+
+.consent-text{
+  font-size:12px;
+  line-height:1.7;
+  color:rgba(255,255,255,.72);
+  cursor:pointer;
+}
+
+.appointment-button{
+  width:100%;
+  min-height:52px;
+  margin-top:20px;
+  border:1px solid var(--accent-blue);
+  border-radius:6px;
+  background:var(--accent-blue);
+  color:#08140f;
+  font-family:inherit;
+  font-size:14px;
+  font-weight:800;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+
+.appointment-button:hover{
+  filter:brightness(1.08);
+  transform:translateY(-1px);
+}
+
+.appointment-button:disabled{
+  opacity:.7;
+  cursor:not-allowed;
+  transform:none;
+}
+
+.appointment-button.loading{
+  position:relative;
+  color:transparent;
+}
+
+.appointment-button.loading::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:18px;
+  height:18px;
+  margin:-9px 0 0 -9px;
+  border:2px solid rgba(8,20,15,.25);
+  border-top-color:#08140f;
+  border-radius:50%;
+  animation:spin .7s linear infinite;
+}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.success-screen{
+  display:none;
+  text-align:center;
+  padding:20px 0 40px;
+}
+
+.success-screen.show{display:block}
+
+.success-icon{
+  font-size:52px;
+  line-height:1;
+  margin-bottom:18px;
+}
+
+.success-heading{
+  margin:0 0 12px;
+  font-size:28px;
+  font-weight:800;
+}
+
+.success-message{
+  max-width:700px;
+  margin:0 auto 26px;
+  color:var(--text-muted);
+  font-size:14px;
+  line-height:1.8;
+}
+
+.success-details{
+  max-width:620px;
+  margin:0 auto;
+  padding:0;
+  border:1px solid rgba(212,175,55,.2);
+  border-radius:8px;
+  overflow:hidden;
+  background:rgba(8,26,18,.72);
+  text-align:left;
+}
+
+.detail-row{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  padding:15px 18px;
+  border-bottom:1px solid rgba(212,175,55,.12);
+}
+
+.detail-row:last-child{border-bottom:0}
+
+.detail-label{
+  color:rgba(255,255,255,.58);
+  font-size:12px;
+}
+
+.detail-value{
+  color:#fff;
+  font-size:13px;
+  font-weight:600;
+  text-align:right;
+}
+
+@media (min-width:768px){
+  .appointment-form-wrapper{
+    padding:48px 20px 60px;
+  }
+
+  .appointment-form-title{
+    font-size:40px;
+  }
+}
+
+@media (max-width:767px){
+  .appointment-form-header{
+    padding:13px 16px;
+  }
+
+  .appointment-form-wrapper{
+    padding:28px 16px 40px;
+  }
+
+  .appointment-form-title{
+    font-size:29px;
+  }
+
+  .appointment-form-subtitle{
+    font-size:14px;
+    margin-bottom:28px;
+  }
+
+  .appointment-section{
+    padding:20px 16px;
+  }
+
+  .appointment-fields{
+    grid-template-columns:1fr;
+    gap:15px;
+  }
+
+  .appointment-field.full-width{
+    grid-column:auto;
+  }
+
+  .time-select-group{
+    grid-template-columns:1fr 1fr 1fr;
+  }
+
+  .success-heading{
+    font-size:24px;
+  }
+
+  .detail-row{
+    align-items:flex-start;
+  }
+
+  .detail-value{
+    max-width:55%;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="appointment-form-overlay">
+  <div class="appointment-form-container">
+
+    <div class="appointment-form-header">
+      <button class="appointment-form-close" id="closeAppointmentForm" type="button">← Back</button>
+    </div>
+
+    <div class="appointment-form-body" id="appointmentFormBody">
+      <div class="appointment-form-wrapper">
+
+        <h2 class="appointment-form-title">Book an Appointment</h2>
+        <p class="appointment-form-subtitle">
+          உங்கள் வசதியான நேரத்தை தேர்வு செய்து, எங்களுடன் பேச ஒரு appointment request அனுப்புங்கள்.
+        </p>
+
+        <form id="appointmentForm">
+
+          <div class="appointment-section">
+            <h3 class="appointment-section-title">Personal Information</h3>
+
+            <div class="appointment-fields">
+
+              <div class="appointment-field">
+                <label class="field-label">Full Name <span class="required">*</span></label>
+                <input type="text" class="form-input" id="apptName" placeholder="Enter your full name" autocomplete="name">
+                <div class="error-message" id="apptNameError"></div>
+              </div>
+
+              <div class="appointment-field">
+                <label class="field-label">Mobile Number <span class="required">*</span></label>
+                <input type="tel" class="form-input" id="apptMobile" placeholder="10-digit mobile number" inputmode="numeric" maxlength="10" autocomplete="tel">
+                <div class="error-message" id="apptMobileError"></div>
+              </div>
+
+              <div class="appointment-field">
+                <label class="field-label">City <span class="required">*</span></label>
+                <input type="text" class="form-input" id="apptCity" placeholder="Enter your city" autocomplete="address-level2">
+                <div class="error-message" id="apptCityError"></div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="appointment-section">
+            <h3 class="appointment-section-title">Appointment Preference</h3>
+
+            <div class="appointment-fields">
+
+              <div class="appointment-field">
+                <label class="field-label">Preferred Date <span class="required">*</span></label>
+                <input type="date" class="form-input" id="apptDate">
+                <div class="error-message" id="apptDateError"></div>
+              </div>
+
+              <div class="appointment-field">
+                <label class="field-label">Preferred Time <span class="required">*</span></label>
+
+                <div class="time-select-group">
+                  <select class="form-select" id="apptTimeHour">
+                    <option value="">Hour</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="01">01</option>
+                    <option value="02">02</option>
+                    <option value="03">03</option>
+                    <option value="04">04</option>
+                    <option value="05">05</option>
+                    <option value="06">06</option>
+                  </select>
+
+                  <select class="form-select" id="apptTimeMinute">
+                    <option value="">Min</option>
+                    <option value="00">00</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                    <option value="40">40</option>
+                    <option value="50">50</option>
+                  </select>
+
+                  <select class="form-select" id="apptTimePeriod">
+                    <option value="">AM/PM</option>
+                    <option value="AM">AM</option>
+                    <option value="PM">PM</option>
+                  </select>
+                </div>
+
+                <div class="error-message" id="apptTimeError"></div>
+              </div>
+
+              <div class="appointment-field full-width">
+                <label class="field-label">Purpose of Appointment <span class="required">*</span></label>
+
+                <select class="form-select" id="apptPurpose">
+                  <option value="">Select purpose</option>
+                  <option value="health-insurance">Health Insurance</option>
+                  <option value="life-insurance">Life Insurance</option>
+                  <option value="vehicle-insurance">Vehicle Insurance</option>
+                  <option value="other">Others</option>
+                </select>
+
+                <div class="error-message" id="apptPurposeError"></div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="appointment-section">
+            <h3 class="appointment-section-title">Additional Information</h3>
+
+            <div class="appointment-fields">
+              <div class="appointment-field full-width">
+                <label class="field-label">Message / Additional Requirements</label>
+                <textarea class="form-textarea" id="apptMessage" placeholder="Share any additional requirements or preferences..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="consent-box">
+            <input type="checkbox" id="apptConsent">
+            <label for="apptConsent" class="consent-text">
+              Future Secure Providers நிறுவனத்திடமிருந்து தொலைபேசி அழைப்புகள், SMS செய்திகள் மற்றும் WhatsApp செய்திகள் பெறுவதற்கு நான் சம்மதிக்கிறேன்.
+            </label>
+          </div>
+
+          <div class="error-message" id="apptConsentError"></div>
+
+          <button type="submit" class="appointment-button" id="apptSubmitBtn">
+            Book My Appointment
+          </button>
+
+        </form>
+
+        <div class="success-screen" id="apptSuccess">
+          <div class="success-icon">🎉</div>
+          <h3 class="success-heading">Appointment Request Received!</h3>
+
+          <p class="success-message">
+            உங்கள் Appointment Request வெற்றிகரமாகப் பெறப்பட்டுள்ளது.
+            உங்கள் தேர்வு செய்த தேதி மற்றும் நேரத்தை கருத்தில் கொண்டு,
+            எங்கள் Insurance Advisor உங்களைத் தொடர்புகொண்டு appointment-ஐ confirm செய்வார்.
+          </p>
+
+          <div class="success-details">
+            <div class="detail-row">
+              <span class="detail-label">Appointment Date:</span>
+              <span class="detail-value" id="successDate">-</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Preferred Time:</span>
+              <span class="detail-value" id="successTime">-</span>
+            </div>
+
+            <div class="detail-row">
+              <span class="detail-label">Purpose:</span>
+              <span class="detail-value" id="successPurpose">-</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+  const form = document.getElementById("appointmentForm");
+  const dateInput = document.getElementById("apptDate");
+  const submitBtn = document.getElementById("apptSubmitBtn");
+
+  // Same behavior as the original: appointments can be booked from tomorrow.
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  dateInput.min = tomorrow.toISOString().split("T")[0];
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
+
+    const nameInput = document.getElementById("apptName");
+    const mobileInput = document.getElementById("apptMobile");
+    const cityInput = document.getElementById("apptCity");
+    const timeHourInput = document.getElementById("apptTimeHour");
+    const timeMinuteInput = document.getElementById("apptTimeMinute");
+    const timePeriodInput = document.getElementById("apptTimePeriod");
+    const purposeInput = document.getElementById("apptPurpose");
+    const consentInput = document.getElementById("apptConsent");
+
+    const name = nameInput.value.trim();
+    const mobile = mobileInput.value.replace(/\D/g, "");
+    const city = cityInput.value.trim();
+    const date = dateInput.value;
+    const timeHour = timeHourInput.value;
+    const timeMinute = timeMinuteInput.value;
+    const timePeriod = timePeriodInput.value;
+    const purpose = purposeInput.value;
+
+    let valid = true;
+
+    if(!name || name.length < 2){
+      document.getElementById("apptNameError").textContent = "Please enter a valid name";
+      valid = false;
+    }
+
+    if(!/^[6-9]\d{9}$/.test(mobile)){
+      document.getElementById("apptMobileError").textContent = "10-digit Indian mobile number required";
+      valid = false;
+    }
+
+    if(!city || city.length < 2){
+      document.getElementById("apptCityError").textContent = "Please enter your city";
+      valid = false;
+    }
+
+    if(!date){
+      document.getElementById("apptDateError").textContent = "Please select a date";
+      valid = false;
+    }
+
+    if(!timeHour || !timeMinute || !timePeriod){
+      document.getElementById("apptTimeError").textContent = "Please select a valid time";
+      valid = false;
+    }
+
+    if(!purpose){
+      document.getElementById("apptPurposeError").textContent = "Please select appointment purpose";
+      valid = false;
+    }
+
+    if(!consentInput.checked){
+      document.getElementById("apptConsentError").textContent = "Please provide consent";
+      valid = false;
+    }
+
+    if(!valid) return;
+
+    submitBtn.disabled = true;
+    submitBtn.classList.add("loading");
+
+    const dateObj = new Date(date);
+    const dateFormatted = dateObj.toLocaleDateString("en-IN", {
+      year:"numeric",
+      month:"long",
+      day:"numeric"
+    });
+
+    const purposeLabel = {
+      "health-insurance":"Health Insurance",
+      "life-insurance":"Life Insurance",
+      "vehicle-insurance":"Vehicle Insurance",
+      "other":"Others"
+    }[purpose];
+
+    const timeFormatted = `${timeHour}:${timeMinute} ${timePeriod}`;
+
+    form.style.display = "none";
+    document.getElementById("apptSuccess").classList.add("show");
+
+    document.getElementById("successDate").textContent = dateFormatted;
+    document.getElementById("successTime").textContent = timeFormatted;
+    document.getElementById("successPurpose").textContent = purposeLabel;
+
+    console.log({
+      name,
+      mobile:"+91"+mobile,
+      city,
+      date:dateFormatted,
+      time:timeFormatted,
+      purpose:purposeLabel,
+      message:document.getElementById("apptMessage").value,
+      consent:true
+    });
+  });
+
+  document.getElementById("closeAppointmentForm").addEventListener("click", function(){
+    history.back();
+  });
+
+});
+</script>
+</body>
+</html>
