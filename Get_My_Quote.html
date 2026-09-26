@@ -950,6 +950,95 @@ function escapeHtml(value) {
     }[char]));
 }
 
+/* FSP CRM CONNECTION — embedded so this form works as a standalone page */
+(function () {
+    const SUPABASE_URL = 'https://cjwxirpwzluynymwjzxl.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz';
+
+    function getSupabase() {
+        if (window.supabase && window.supabase.createClient) return Promise.resolve(window.supabase);
+        return new Promise((resolve, reject) => {
+            const existing = document.querySelector('script[data-fsp-supabase-sdk="1"]');
+            if (existing) {
+                existing.addEventListener('load', () => {
+                    if (window.supabase && window.supabase.createClient) resolve(window.supabase);
+                    else reject(new Error('Supabase SDK not available'));
+                }, { once: true });
+                existing.addEventListener('error', () => reject(new Error('Failed to load Supabase SDK')), { once: true });
+                return;
+            }
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+            script.async = true;
+            script.setAttribute('data-fsp-supabase-sdk', '1');
+            script.onload = () => {
+                if (window.supabase && window.supabase.createClient) resolve(window.supabase);
+                else reject(new Error('Supabase SDK not available'));
+            };
+            script.onerror = () => reject(new Error('Failed to load Supabase SDK'));
+            document.head.appendChild(script);
+        });
+    }
+
+    function cleanMobile(value) {
+        let mobile = String(value || '').replace(/\D/g, '');
+        if (mobile.length === 12 && mobile.indexOf('91') === 0) mobile = mobile.slice(2);
+        if (mobile.length === 11 && mobile.charAt(0) === '0') mobile = mobile.slice(1);
+        return mobile;
+    }
+
+    function sourceFromSession() {
+        let source = '';
+        try { source = sessionStorage.getItem('fsp_utm_source') || ''; } catch (e) {}
+        return source === 'MetaAds' ? 'Meta Ads' : 'Website';
+    }
+
+    window.saveFspLead = async function (payload) {
+        payload = payload || {};
+        const fullName = String(payload.full_name || '').trim();
+        const mobile = cleanMobile(payload.mobile_number);
+
+        if (fullName.length < 2 || !/^[6-9]\d{9}$/.test(mobile)) {
+            return { success: false, error: 'Invalid name or mobile number' };
+        }
+
+        try {
+            const supabase = await getSupabase();
+            const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            const existing = await client.from('leads').select('id').eq('mobile_number', mobile).limit(1);
+            if (existing.error) throw existing.error;
+
+            if (existing.data && existing.data.length) {
+                return { success: true, duplicate: true, lead_id: existing.data[0].id };
+            }
+
+            let notes = String(payload.notes || '').trim();
+            const product = String(payload.product || '').trim();
+            if (product) notes = notes ? 'Product: ' + product + ' | ' + notes : 'Product: ' + product;
+
+            const rpc = await client.rpc('handle_website_lead_creation', {
+                p_full_name: fullName,
+                p_mobile_number: mobile,
+                p_city: payload.city ? String(payload.city).trim() : null,
+                p_lead_source: payload.lead_source || sourceFromSession(),
+                p_pincode: payload.pincode ? String(payload.pincode).trim() : null,
+                p_family_members: payload.family_members ? String(payload.family_members) : null,
+                p_medical_info: payload.medical_info ? String(payload.medical_info) : 'இல்லை',
+                p_notes: notes || null
+            });
+
+            if (rpc.error) throw rpc.error;
+            if (!rpc.data || !rpc.data.success) throw new Error('Lead creation failed');
+
+            return { success: true, duplicate: false, lead_id: rpc.data.lead_id };
+        } catch (error) {
+            console.error('FSP CRM lead save failed:', error);
+            return { success: false, error: error && error.message ? error.message : String(error) };
+        }
+    };
+})();
+
 document.getElementById('quoteForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
@@ -995,15 +1084,25 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
         }
     });
 
-    const medical = Array.from(form.querySelectorAll('input[name="medical"]:checked')).map(el => el.value);
+    const medicalAnswer = form.querySelector('input[name="medical"]:checked')?.value || 'no';
+    const medicalConditions = Array.from(form.querySelectorAll('input[name="conditions"]:checked')).map(el => el.value);
+    const medicalInfo = medicalAnswer === 'yes'
+        ? (medicalConditions.length ? medicalConditions.join(', ') : 'ஆம் (Yes)')
+        : 'இல்லை (No)';
+
     const crmResult = await window.saveFspLead({
         product: 'Health Insurance',
         full_name: name,
         mobile_number: mobile,
+        city: 'Pincode: ' + pincode,
         pincode: pincode,
         family_members: selectedMembers.join(', '),
-        medical_info: medical.length ? medical.join(', ') : 'இல்லை',
+        medical_info: medicalInfo,
         notes: [
+            'Website Quote Form',
+            'Family: ' + (selectedMembers.join(', ') || '—'),
+            'Pincode: ' + pincode,
+            'Medical: ' + medicalInfo,
             'Callback Date: ' + (callbackDate || ''),
             'Callback Time: ' + (callbackTime || ''),
             'Consent: Yes'
