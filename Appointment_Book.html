@@ -423,6 +423,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
   }
 }
 </style>
+  <script src="crm-form-bridge.js"></script>
 </head>
 
 <body>
@@ -606,7 +607,7 @@ document.addEventListener("DOMContentLoaded", function(){
   tomorrow.setDate(tomorrow.getDate() + 1);
   dateInput.min = tomorrow.toISOString().split("T")[0];
 
-  form.addEventListener("submit", function(e){
+  form.addEventListener("submit", async function(e){
     e.preventDefault();
 
     document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
@@ -686,6 +687,28 @@ document.addEventListener("DOMContentLoaded", function(){
     }[purpose];
 
     const timeFormatted = `${timeHour}:${timeMinute} ${timePeriod}`;
+
+    const crmResult = await window.saveFspLead({
+      product: "Appointment",
+      full_name: name,
+      mobile_number: mobile,
+      city: city,
+      notes: [
+        "Appointment Date: " + dateFormatted,
+        "Preferred Time: " + timeFormatted,
+        "Purpose: " + purposeLabel,
+        "Message: " + (document.getElementById("apptMessage").value || ""),
+        "Consent: Yes"
+      ].join(" | ")
+    });
+
+    if(!crmResult.success){
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("loading");
+      document.getElementById("apptConsentError").textContent = "Enquiry save ஆகவில்லை. தயவுசெய்து மீண்டும் முயற்சி செய்யவும்.";
+      console.error("Appointment CRM save failed:", crmResult.error);
+      return;
+    }
 
     form.style.display = "none";
     document.getElementById("apptSuccess").classList.add("show");

@@ -21,6 +21,7 @@
 .privacy{font-size:12px;color:var(--muted);margin:0}.error{font-size:12px;color:var(--danger);display:none}.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:#e0a3a0}.field.invalid .error{display:block}.success{display:none;padding:18px;border-radius:16px;background:#eaf7ee;border:1px solid #b9e0c2;color:var(--ok)}.success strong{display:block;margin-bottom:4px}.direct{margin-top:24px;padding:20px;border-radius:18px;background:#f1f8fc;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:18px}.direct strong{color:var(--navy)}.phones{display:flex;flex-wrap:wrap;gap:8px}.phones a{text-decoration:none;font-weight:800;color:var(--blue2)}footer{background:var(--navy);color:#dcecf5;padding:22px 0;font-size:13px}footer .wrap{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.back{color:#fff;text-decoration:none;font-weight:700}@media(max-width:800px){.hero-grid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.contact{display:none}}@media(max-width:520px){.wrap{width:min(100% - 22px,1120px)}.card{padding:20px}.hero{padding-top:34px}.hero-art{min-height:240px}.brand strong{font-size:17px}.actions .btn{width:100%}.direct{align-items:flex-start;flex-direction:column}.topbar .wrap{font-size:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
+  <script src="crm-form-bridge.js"></script>
 </head>
 <body>
 <header>
@@ -85,7 +86,7 @@
    consentBox.classList.toggle('invalid',!consent.checked);
  });
  function setInvalid(el,bad){el.closest('.field').classList.toggle('invalid',bad)}
- form.addEventListener('submit',function(e){
+ form.addEventListener('submit',async function(e){
    e.preventDefault();
    let ok=true;
    const required=[document.getElementById('name'),mobile,document.getElementById('city'),document.getElementById('vehicleType'),document.getElementById('insuranceType')];
@@ -98,6 +99,31 @@
      if(first){first.focus(); return;}
      if(consentBad){consent.focus(); return;}
    }
+
+   const data = new FormData(form);
+   const crmResult = await window.saveFspLead({
+     product: 'Vehicle Insurance',
+     full_name: data.get('name'),
+     mobile_number: data.get('mobile'),
+     city: data.get('city'),
+     notes: [
+       'Vehicle Type: ' + (data.get('vehicleType') || ''),
+       'Registration: ' + (data.get('registration') || ''),
+       'Insurance Type: ' + (data.get('insuranceType') || ''),
+       'Policy Expiry: ' + (data.get('expiry') || ''),
+       'Existing Insurance Company: ' + (data.get('company') || ''),
+       'Previous Claim: ' + (data.get('claim') || ''),
+       'Message: ' + (data.get('message') || ''),
+       'Consent: Yes'
+     ].join(' | ')
+   });
+
+   if(!crmResult.success){
+     console.error('Vehicle enquiry CRM save failed:', crmResult.error);
+     alert('Enquiry save ஆகவில்லை. தயவுசெய்து மீண்டும் முயற்சி செய்யவும்.');
+     return;
+   }
+
    success.style.display='block';
    form.reset();
    window.scrollTo({top:success.getBoundingClientRect().top+window.scrollY-30,behavior:'smooth'});

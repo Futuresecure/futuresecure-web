@@ -197,6 +197,7 @@ textarea{min-height:120px;resize:vertical}
 @media(max-width:680px){.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
 
 </style>
+  <script src="crm-form-bridge.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -368,7 +369,7 @@ textarea{min-height:120px;resize:vertical}
   [fields.name,fields.mobile,fields.age].forEach(f=>f.addEventListener("blur",validate));
   fields.consent.addEventListener("change",validate);
 
-  form.addEventListener("submit",function(e){
+  form.addEventListener("submit",async function(e){
     e.preventDefault();
     status.className="form-status";
     status.textContent="";
@@ -393,6 +394,29 @@ textarea{min-height:120px;resize:vertical}
       "Message: "+(data.get("message")||""),
       "Consent: Yes"
     ].join("\n");
+
+    const crmResult = await window.saveFspLead({
+      product: "Life Insurance",
+      full_name: data.get("name"),
+      mobile_number: data.get("mobile"),
+      notes: [
+        "Age: "+(data.get("age")||""),
+        "Occupation: "+(data.get("occupation")||""),
+        "Annual Income: "+(data.get("income")||""),
+        "Existing Life Insurance: "+(data.get("existing")||""),
+        "Purpose: "+(data.get("purpose")||""),
+        "Preferred Contact Time: "+(data.get("time")||""),
+        "Message: "+(data.get("message")||""),
+        "Consent: Yes"
+      ].join(" | ")
+    });
+
+    if(!crmResult.success){
+      status.className="form-status show info";
+      status.textContent="Enquiry save ஆகவில்லை. தயவுசெய்து மீண்டும் முயற்சி செய்யவும்.";
+      console.error("Life enquiry CRM save failed:", crmResult.error);
+      return;
+    }
 
     status.className="form-status show info";
     status.textContent="Enquiry prepared. WhatsApp will open in a moment…";

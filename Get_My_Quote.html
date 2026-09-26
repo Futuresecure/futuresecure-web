@@ -553,6 +553,7 @@
     }
 
 </style>
+  <script src="crm-form-bridge.js"></script>
 </head>
 
 <body>
@@ -949,7 +950,7 @@ function escapeHtml(value) {
     }[char]));
 }
 
-document.getElementById('quoteForm').addEventListener('submit', function(e) {
+document.getElementById('quoteForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     if (!this.checkValidity()) {
@@ -993,6 +994,27 @@ document.getElementById('quoteForm').addEventListener('submit', function(e) {
             selectedMembers.push(`${label}${age ? ` (${age})` : ''}`);
         }
     });
+
+    const medical = Array.from(form.querySelectorAll('input[name="medical"]:checked')).map(el => el.value);
+    const crmResult = await window.saveFspLead({
+        product: 'Health Insurance',
+        full_name: name,
+        mobile_number: mobile,
+        pincode: pincode,
+        family_members: selectedMembers.join(', '),
+        medical_info: medical.length ? medical.join(', ') : 'இல்லை',
+        notes: [
+            'Callback Date: ' + (callbackDate || ''),
+            'Callback Time: ' + (callbackTime || ''),
+            'Consent: Yes'
+        ].join(' | ')
+    });
+
+    if (!crmResult.success) {
+        console.error('Health quote CRM save failed:', crmResult.error);
+        alert('Enquiry save ஆகவில்லை. தயவுசெய்து மீண்டும் முயற்சி செய்யவும்.');
+        return;
+    }
 
     const wrapper = document.querySelector('.form-wrap');
 

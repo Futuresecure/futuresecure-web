@@ -1,35 +1,6 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
-    <!-- Meta Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s)
-{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];
-s.parentNode.insertBefore(t,s)}(window, document,'script',
-'https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '2164705994102235');
-fbq('track', 'PageView');
-</script>
-<script>
-// Tracking functions for different events
-function trackLead() {
-  fbq('track', 'Lead');
-}
-function trackContact() {
-  fbq('track', 'Contact');
-}
-function trackSchedule() {
-  fbq('track', 'Schedule');
-}
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=2164705994102235&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Meta Pixel Code -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Future Secure Providers - Professional insurance guidance for families. Clear, transparent health, vehicle, and life insurance advisory.">
@@ -3748,6 +3719,7 @@ src="https://www.facebook.com/tr?id=2164705994102235&ev=PageView&noscript=1"
             opacity: 1 !important;
         }
     </style>
+  <script src="crm-form-bridge.js"></script>
 </head>
 <body>
     <!-- HEADER -->
@@ -4542,7 +4514,7 @@ src="https://www.facebook.com/tr?id=2164705994102235&ev=PageView&noscript=1"
       const mobileErrorEl = document.getElementById('mobileError');
       const consentErrorEl = document.getElementById('consentError');
       
-      quoteFormElement.addEventListener('submit', e => {
+      quoteFormElement.addEventListener('submit', async e => {
         e.preventDefault();
         
         errorTextElements.forEach(el => el.textContent = '');
@@ -4626,6 +4598,23 @@ src="https://www.facebook.com/tr?id=2164705994102235&ev=PageView&noscript=1"
         document.querySelectorAll('#daughterList .daughter-age').forEach((inp, i) => {
           if(inp.value) members.push(`Daughter ${i+2} (${inp.value})`);
         });
+
+        const medical = Array.from(document.querySelectorAll('#medicalOptions input[type=\"checkbox\"]:checked')).map(el => el.value);
+        const crmResult = await window.saveFspLead({
+          product: 'Health Insurance',
+          full_name: name,
+          mobile_number: mob,
+          pincode: pin,
+          family_members: members.join(', '),
+          medical_info: medical.length ? medical.join(', ') : 'இல்லை',
+          notes: 'Homepage Quote Enquiry | Consent: Yes'
+        });
+
+        if(!crmResult.success){
+          console.error('Homepage health enquiry CRM save failed:', crmResult.error);
+          alert('Enquiry save ஆகவில்லை. தயவுசெய்து மீண்டும் முயற்சி செய்யவும்.');
+          return;
+        }
 
         document.getElementById('successName').textContent = name;
         document.getElementById('successPin').textContent = pin;
