@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Future Secure Providers</title>
+  <script>
+    (function () {
+      const path = window.location.pathname.replace(/\/+$/, '');
+      const redirects = {
+        '/health': '/Get_My_Quote.html',
+        '/life': '/life-insurance-enquiry.html',
+        '/vehicle': '/vehicle-insurance-quote.html'
+      };
+      const target = redirects[path];
+      if (target) {
+        window.location.replace(target);
+      }
+    })();
+  </script>
+</head>
+<body>
+  <p>Redirecting...</p>
+</body>
+</html>
