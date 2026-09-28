@@ -1,6 +1,36 @@
 <!DOCTYPE html>
 <html lang="ta">
 <head>
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '2164705994102235');
+    fbq('track', 'PageView');
+    </script>
+    <script>
+    // Tracking functions for different events
+    function trackLead() {
+      fbq('track', 'Lead');
+    }
+    function trackContact() {
+      fbq('track', 'Contact');
+    }
+    function trackSchedule() {
+      fbq('track', 'Schedule');
+    }
+    </script>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=2164705994102235&ev=PageView&noscript=1"
+    /></noscript>
+    <!-- End Meta Pixel Code -->
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Future Secure Providers - Professional insurance guidance for families. Clear, transparent health, vehicle, and life insurance advisory.">
@@ -3755,7 +3785,7 @@
                     <div class="hero-cta">
                         <button class="btn-primary" onclick="openQuoteForm()">இலவச பிரீமியம் அறிய</button>
                         <button class="btn-secondary" onclick="openAppointmentForm()">📅 Appointment Book</button>
-                        <a href="tel:9585905905" class="btn-secondary">Advisor-உடன் பேசுங்கள்</a>
+                        <a href="tel:9585905905" class="btn-secondary" onclick="trackContact()">Advisor-உடன் பேசுங்கள்</a>
                     </div>
                 </div>
                 <div class="hero-visual">
@@ -4080,8 +4110,8 @@
                 <p>உங்கள் Insurance தேவைக்குத் தெளிவான, தனிப்பட வழிகாட்டல் வழங்குகிறோம். உங்கள் குடும்பத்திற்கு சரியான முடிவு எடுக்க உதவ நாங்கள் தயாராக இருக்கிறோம்.</p>
                 
                 <div class="cta-buttons">
-                    <a href="tel:9585905905" class="btn-primary">Call: 9585 905 905</a>
-                    <a href="tel:9363705905" class="btn-secondary">Call: 9363 705 905</a>
+                    <a href="tel:9585905905" class="btn-primary" onclick="trackContact()">Call: 9585 905 905</a>
+                    <a href="tel:9363705905" class="btn-secondary" onclick="trackContact()">Call: 9363 705 905</a>
                 </div>
             </div>
         </div>
@@ -4125,8 +4155,8 @@
                 <div class="footer-section">
                     <h3>தொடர்பு</h3>
                     <div class="footer-contact">
-                        <a href="tel:9585905905" class="footer-phone">9585 905 905</a>
-                        <a href="tel:9363705905" class="footer-phone">9363 705 905</a>
+                        <a href="tel:9585905905" class="footer-phone" onclick="trackContact()">9585 905 905</a>
+                        <a href="tel:9363705905" class="footer-phone" onclick="trackContact()">9363 705 905</a>
                         <a href="mailto:futuresecureproviders@gmail.com" class="footer-email">futuresecureproviders@gmail.com</a>
                     </div>
                 </div>
@@ -4146,11 +4176,13 @@
     
     // Navigate to quote form
     function openQuoteForm(service) {
+        trackLead();
         window.location.href = 'Get_My_Quote.html';
     }
 
     // Navigate to appointment form
     function openAppointmentForm() {
+        trackSchedule();
         window.location.href = 'Appointment_Book.html';
     }
     
