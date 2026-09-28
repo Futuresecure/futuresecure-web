@@ -1025,7 +1025,7 @@ function escapeHtml(value) {
                 p_pincode: payload.pincode ? String(payload.pincode).trim() : null,
                 p_family_members: payload.family_members ? String(payload.family_members) : null,
                 p_medical_info: payload.medical_info ? String(payload.medical_info) : 'இல்லை',
-                p_source: notes || null
+                p_notes: notes || null
             });
 
             if (rpc.error) throw rpc.error;
