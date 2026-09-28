@@ -1025,7 +1025,7 @@ function escapeHtml(value) {
                 p_pincode: payload.pincode ? String(payload.pincode).trim() : null,
                 p_family_members: payload.family_members ? String(payload.family_members) : null,
                 p_medical_info: payload.medical_info ? String(payload.medical_info) : 'இல்லை',
-                p_notes: notes || null
+                p_source: notes || null
             });
 
             if (rpc.error) throw rpc.error;
@@ -1127,7 +1127,7 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
                 p_mobile_number: mobile,
                 p_appointment_date: callbackDate,
                 p_appointment_time: callbackTime,
-                p_notes: 'Health Insurance callback | ' + (selectedMembers.join(', ') || 'Family details not specified')
+                p_source: 'Health Insurance callback | ' + (selectedMembers.join(', ') || 'Family details not specified')
             });
             if (appointmentResult.error) {
                 console.error('Health callback appointment save failed:', appointmentResult.error);
