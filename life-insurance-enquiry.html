@@ -459,7 +459,7 @@ textarea{min-height:120px;resize:vertical}
         p_mobile_number:data.get("mobile"),
         p_appointment_date:data.get("callbackDate"),
         p_appointment_time:data.get("callbackTime"),
-        p_notes:"Life Insurance enquiry | Purpose: "+(data.get("purpose")||"")
+        p_source:"Life Insurance enquiry | Purpose: "+(data.get("purpose")||"")
       });
       if(appt.error) console.error("Life appointment save failed:",appt.error);
     } catch(err){ console.error("Life appointment connection failed:",err); }
