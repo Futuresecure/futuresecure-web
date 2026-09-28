@@ -721,7 +721,7 @@ document.addEventListener("DOMContentLoaded", function(){
         p_mobile_number: mobile,
         p_appointment_date: date,
         p_appointment_time: timeFormatted,
-        p_notes: "Appointment | Purpose: " + purposeLabel + " | City: " + city + " | Message: " + (document.getElementById("apptMessage").value || "")
+        p_source: "Appointment | Purpose: " + purposeLabel + " | City: " + city + " | Message: " + (document.getElementById("apptMessage").value || "")
       });
       if (appointmentResult.error) {
         console.error("Calendar appointment save failed:", appointmentResult.error);
