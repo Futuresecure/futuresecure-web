@@ -142,7 +142,7 @@
        p_mobile_number:data.get('mobile'),
        p_appointment_date:data.get('callbackDate'),
        p_appointment_time:data.get('callbackTime'),
-       p_notes:'Vehicle Insurance enquiry | Vehicle: '+(data.get('vehicleType')||'')+' | Registration: '+(data.get('registration')||'')
+       p_source:'Vehicle Insurance enquiry | Vehicle: '+(data.get('vehicleType')||'')+' | Registration: '+(data.get('registration')||'')
      });
      if(appt.error) console.error('Vehicle appointment save failed:',appt.error);
    }catch(err){console.error('Vehicle appointment connection failed:',err);}
