@@ -196,106 +196,13 @@ textarea{min-height:120px;resize:vertical}
 @media(max-width:900px){.enquiry-grid{grid-template-columns:1fr}.enquiry-copy{position:static}.formbox,.enquiry-copy{padding:22px}}
 @media(max-width:680px){.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}}
 
+
+/* Callback date/time + submitted details */
+.callback-section{margin:18px 0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--soft)}
+.callback-section h3{margin:0 0 5px;font-size:15px}.callback-section p{margin:0 0 12px;color:var(--muted);font-size:12px}.callback-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.callback-grid label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.callback-grid input,.callback-grid select{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:#fff}.submitted-confirmation{display:none;margin-top:18px;padding:20px;border:1px solid #b9e0c2;border-radius:14px;background:#f3fbf5}.submitted-confirmation.show{display:block}.submitted-confirmation h3{margin:0 0 12px}.submitted-row{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid #dfeee3;font-size:13px}.submitted-row:last-child{border-bottom:0}.submitted-row strong{text-align:right}.submitted-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.submitted-actions a{display:inline-flex;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}.submitted-call{background:#e0f2fe;color:#075985}.submitted-wa{background:#dcfce7;color:#166534}@media(max-width:650px){.callback-grid{grid-template-columns:1fr}.submitted-row{align-items:flex-start;flex-direction:column;gap:3px}.submitted-row strong{text-align:left}}
 </style>
-  <script>
-/* Future Secure Providers - Website Form -> CRM Bridge
-   Keeps existing form UI/HTML unchanged and only adds CRM lead creation.
-*/
-(function () {
-  var SUPABASE_URL = "https://cjwxirpwzluynymwjzxl.supabase.co";
-  var SUPABASE_KEY = "sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz";
-
-  function getSupabase() {
-    if (window.supabase && window.supabase.createClient) return Promise.resolve(window.supabase);
-    return new Promise(function (resolve, reject) {
-      var existing = document.querySelector('script[data-fsp-supabase-sdk="1"]');
-      if (existing) {
-        existing.addEventListener("load", function () {
-          if (window.supabase && window.supabase.createClient) resolve(window.supabase);
-          else reject(new Error("Supabase SDK not available"));
-        }, { once: true });
-        existing.addEventListener("error", function () { reject(new Error("Failed to load Supabase SDK")); }, { once: true });
-        return;
-      }
-      var script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-      script.async = true;
-      script.setAttribute("data-fsp-supabase-sdk", "1");
-      script.onload = function () {
-        if (window.supabase && window.supabase.createClient) resolve(window.supabase);
-        else reject(new Error("Supabase SDK not available"));
-      };
-      script.onerror = function () { reject(new Error("Failed to load Supabase SDK")); };
-      document.head.appendChild(script);
-    });
-  }
-
-  function cleanMobile(value) {
-    var mobile = String(value || "").replace(/\D/g, "");
-    if (mobile.length === 12 && mobile.indexOf("91") === 0) mobile = mobile.slice(2);
-    if (mobile.length === 11 && mobile.charAt(0) === "0") mobile = mobile.slice(1);
-    return mobile;
-  }
-
-  function sourceFromSession() {
-    var source = "";
-    try { source = sessionStorage.getItem("fsp_utm_source") || ""; } catch (e) {}
-    return source === "MetaAds" ? "Meta Ads" : "Website";
-  }
-
-  window.saveFspLead = async function (payload) {
-    payload = payload || {};
-    var fullName = String(payload.full_name || "").trim();
-    var mobile = cleanMobile(payload.mobile_number);
-
-    if (fullName.length < 2 || !/^[6-9]\d{9}$/.test(mobile)) {
-      return { success: false, error: "Invalid name or mobile number" };
-    }
-
-    try {
-      var supabase = await getSupabase();
-      var client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-      var existing = await client.from("leads").select("id").eq("mobile_number", mobile).limit(1);
-      if (existing.error) throw existing.error;
-
-      if (existing.data && existing.data.length) {
-        return { success: true, duplicate: true, lead_id: existing.data[0].id };
-      }
-
-      var notes = String(payload.notes || "").trim();
-      var product = String(payload.product || "").trim();
-      if (product) notes = notes ? "Product: " + product + " | " + notes : "Product: " + product;
-
-      var rpc = await client.rpc("handle_website_lead_creation", {
-        p_full_name: fullName,
-        p_mobile_number: mobile,
-        p_city: payload.city ? String(payload.city).trim() : null,
-        p_lead_source: payload.lead_source || sourceFromSession(),
-        p_pincode: payload.pincode ? String(payload.pincode).trim() : null,
-        p_family_members: payload.family_members ? String(payload.family_members) : null,
-        p_medical_info: payload.medical_info ? String(payload.medical_info) : "இல்லை",
-        p_notes: notes || null
-      });
-
-      if (rpc.error) throw rpc.error;
-      if (!rpc.data || !rpc.data.success) throw new Error("Lead creation failed");
-
-      return {
-        success: true,
-        duplicate: false,
-        lead_id: rpc.data.lead_id,
-        full_name: fullName,
-        mobile_number: mobile
-      };
-    } catch (error) {
-      console.error("FSP CRM lead save failed:", error);
-      return { success: false, error: error && error.message ? error.message : String(error) };
-    }
-  };
-})();
-
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="crm-form-bridge.js"></script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
@@ -384,6 +291,16 @@ textarea{min-height:120px;resize:vertical}
               </select>
             </div>
             <div class="field full">
+              <div class="callback-section">
+                <h3>எப்போது தொடர்பு கொள்ளலாம்?</h3>
+                <p>உங்களுக்கு வசதியான தேதி மற்றும் நேரத்தை தேர்வு செய்யுங்கள். இது CRM Calendar-ல் appointment ஆக save செய்யப்படும்.</p>
+                <div class="callback-grid">
+                  <div><label for="callbackDate">Callback Date *</label><input id="callbackDate" name="callbackDate" type="date" required></div>
+                  <div><label for="callbackTime">Callback Time *</label><select id="callbackTime" name="callbackTime" required><option value="">Select Time</option><option>09:00 AM</option><option>09:30 AM</option><option>10:00 AM</option><option>10:30 AM</option><option>11:00 AM</option><option>11:30 AM</option><option>12:00 PM</option><option>12:30 PM</option><option>01:00 PM</option><option>01:30 PM</option><option>02:00 PM</option><option>02:30 PM</option><option>03:00 PM</option><option>03:30 PM</option><option>04:00 PM</option><option>04:30 PM</option><option>05:00 PM</option><option>05:30 PM</option><option>06:00 PM</option><option>06:30 PM</option><option>07:00 PM</option></select></div>
+                </div>
+              </div>
+            </div>
+            <div class="field full">
               <label for="message">Message</label>
               <textarea id="message" name="message" placeholder="உங்கள் தேவையை சுருக்கமாக எழுதலாம்"></textarea>
             </div>
@@ -401,6 +318,15 @@ textarea{min-height:120px;resize:vertical}
             <p class="privacy">இந்த form enquiry purpose-க்கு மட்டுமே. Policy availability, eligibility, premium மற்றும் benefits insurer underwriting மற்றும் policy terms-ஐ பொறுத்தது.</p>
           </div>
         </form>
+        <div class="submitted-confirmation" id="submittedConfirmation">
+          <h3>✓ SUBMITTED DETAILS</h3>
+          <div class="submitted-row"><span>Name</span><strong id="submittedName"></strong></div>
+          <div class="submitted-row"><span>Mobile</span><strong id="submittedMobile"></strong></div>
+          <div class="submitted-row"><span>Age</span><strong id="submittedAge"></strong></div>
+          <div class="submitted-row"><span>Callback Date</span><strong id="submittedDate"></strong></div>
+          <div class="submitted-row"><span>Callback Time</span><strong id="submittedTime"></strong></div>
+          <div class="submitted-actions"><a class="submitted-call" href="tel:+919585905905">Call Advisor</a><a class="submitted-wa" id="submittedWhatsApp" href="#" target="_blank" rel="noopener">WhatsApp</a></div>
+        </div>
       </div>
     </div>
   </div>
@@ -443,6 +369,9 @@ textarea{min-height:120px;resize:vertical}
     age:document.getElementById("age"),
     consent:document.getElementById("consent")
   };
+  const callbackDate=document.getElementById("callbackDate");
+  const callbackTime=document.getElementById("callbackTime");
+  if(callbackDate){ const d=new Date(); callbackDate.min=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 
   function setError(field,errorId,invalid){
     field.setAttribute("aria-invalid",invalid?"true":"false");
@@ -455,12 +384,15 @@ textarea{min-height:120px;resize:vertical}
     const ageValue=fields.age.value.trim();
     const ageOk=!ageValue || (Number(ageValue)>=18 && Number(ageValue)<=100);
     const consentOk=fields.consent.checked;
+    const callbackOk=!!(callbackDate && callbackDate.value && callbackTime && callbackTime.value);
     setError(fields.name,"nameError",!nameOk);
     setError(fields.mobile,"mobileError",!mobileOk);
     setError(fields.age,"ageError",!ageOk);
     fields.consent.setAttribute("aria-invalid",consentOk?"false":"true");
     document.getElementById("consentError").classList.toggle("show",!consentOk);
-    return nameOk && mobileOk && ageOk && consentOk;
+    if(callbackDate) callbackDate.setAttribute("aria-invalid",callbackOk?"false":"true");
+    if(callbackTime) callbackTime.setAttribute("aria-invalid",callbackOk?"false":"true");
+    return nameOk && mobileOk && ageOk && consentOk && callbackOk;
   }
 
   fields.mobile.addEventListener("input",()=>{fields.mobile.value = fields.mobile.value.replace(/\D/g,"").slice(0,10);});
@@ -488,6 +420,8 @@ textarea{min-height:120px;resize:vertical}
       "Annual Income: "+(data.get("income")||""),
       "Existing Life Insurance: "+(data.get("existing")||""),
       "Purpose: "+(data.get("purpose")||""),
+      "Callback Date: "+(data.get("callbackDate")||""),
+      "Callback Time: "+(data.get("callbackTime")||""),
       "Preferred Contact Time: "+(data.get("time")||""),
       "Message: "+(data.get("message")||""),
       "Consent: Yes"
@@ -503,6 +437,8 @@ textarea{min-height:120px;resize:vertical}
         "Annual Income: "+(data.get("income")||""),
         "Existing Life Insurance: "+(data.get("existing")||""),
         "Purpose: "+(data.get("purpose")||""),
+        "Callback Date: "+(data.get("callbackDate")||""),
+        "Callback Time: "+(data.get("callbackTime")||""),
         "Preferred Contact Time: "+(data.get("time")||""),
         "Message: "+(data.get("message")||""),
         "Consent: Yes"
@@ -516,10 +452,28 @@ textarea{min-height:120px;resize:vertical}
       return;
     }
 
+    try {
+      const supabaseClient=window.supabase.createClient("https://cjwxirpwzluynymwjzxl.supabase.co","sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz");
+      const appt=await supabaseClient.rpc("handle_appointment_booking",{
+        p_customer_name:data.get("name"),
+        p_mobile_number:data.get("mobile"),
+        p_appointment_date:data.get("callbackDate"),
+        p_appointment_time:data.get("callbackTime"),
+        p_notes:"Life Insurance enquiry | Purpose: "+(data.get("purpose")||"")
+      });
+      if(appt.error) console.error("Life appointment save failed:",appt.error);
+    } catch(err){ console.error("Life appointment connection failed:",err); }
+
+    form.style.display="none";
+    document.getElementById("submittedConfirmation").classList.add("show");
+    document.getElementById("submittedName").textContent=data.get("name")||"—";
+    document.getElementById("submittedMobile").textContent=data.get("mobile")||"—";
+    document.getElementById("submittedAge").textContent=data.get("age")||"—";
+    document.getElementById("submittedDate").textContent=data.get("callbackDate")||"—";
+    document.getElementById("submittedTime").textContent=data.get("callbackTime")||"—";
+    document.getElementById("submittedWhatsApp").href="https://wa.me/919585905905?text="+encodeURIComponent(message);
     status.className="form-status show info";
-    status.textContent="Enquiry prepared. WhatsApp will open in a moment…";
-    const url="https://wa.me/919585905905?text="+encodeURIComponent(message);
-    window.setTimeout(()=>{window.location.href=url;},350);
+    status.textContent="Enquiry submitted successfully.";
   });
 })();
 </script>

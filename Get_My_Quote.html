@@ -1115,6 +1115,28 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
         return;
     }
 
+    // Create a real CRM calendar appointment from the customer's selected callback date/time.
+    if (callbackDate && callbackTime) {
+        try {
+            const supabaseClient = window.supabase.createClient(
+                'https://cjwxirpwzluynymwjzxl.supabase.co',
+                'sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz'
+            );
+            const appointmentResult = await supabaseClient.rpc('handle_appointment_booking', {
+                p_customer_name: name,
+                p_mobile_number: mobile,
+                p_appointment_date: callbackDate,
+                p_appointment_time: callbackTime,
+                p_notes: 'Health Insurance callback | ' + (selectedMembers.join(', ') || 'Family details not specified')
+            });
+            if (appointmentResult.error) {
+                console.error('Health callback appointment save failed:', appointmentResult.error);
+            }
+        } catch (appointmentError) {
+            console.error('Health callback appointment connection failed:', appointmentError);
+        }
+    }
+
     const wrapper = document.querySelector('.form-wrap');
 
     wrapper.innerHTML = `

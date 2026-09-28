@@ -20,106 +20,11 @@
 .consent-box.invalid .consent-error{display:block}
 .privacy{font-size:12px;color:var(--muted);margin:0}.error{font-size:12px;color:var(--danger);display:none}.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:#e0a3a0}.field.invalid .error{display:block}.success{display:none;padding:18px;border-radius:16px;background:#eaf7ee;border:1px solid #b9e0c2;color:var(--ok)}.success strong{display:block;margin-bottom:4px}.direct{margin-top:24px;padding:20px;border-radius:18px;background:#f1f8fc;border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:18px}.direct strong{color:var(--navy)}.phones{display:flex;flex-wrap:wrap;gap:8px}.phones a{text-decoration:none;font-weight:800;color:var(--blue2)}footer{background:var(--navy);color:#dcecf5;padding:22px 0;font-size:13px}footer .wrap{display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}.back{color:#fff;text-decoration:none;font-weight:700}@media(max-width:800px){.hero-grid{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.contact{display:none}}@media(max-width:520px){.wrap{width:min(100% - 22px,1120px)}.card{padding:20px}.hero{padding-top:34px}.hero-art{min-height:240px}.brand strong{font-size:17px}.actions .btn{width:100%}.direct{align-items:flex-start;flex-direction:column}.topbar .wrap{font-size:12px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+
+.callback-section{margin:18px 0;padding:16px;border:1px solid var(--line);border-radius:14px;background:#f8fbfd}.callback-section h3{margin:0 0 5px;color:var(--navy);font-size:15px}.callback-section p{margin:0 0 12px;color:var(--muted);font-size:12px}.callback-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.callback-grid label{display:block;margin-bottom:6px;font-weight:700;font-size:12px}.callback-grid input,.callback-grid select{width:100%;padding:11px;border:1px solid var(--line);border-radius:8px;background:#fff}.submitted-confirmation{display:none;margin-top:18px;padding:20px;border:1px solid #b9e0c2;border-radius:14px;background:#f3fbf5;color:var(--navy)}.submitted-confirmation.show{display:block}.submitted-confirmation h3{margin:0 0 12px}.submitted-row{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid #dfeee3;font-size:13px}.submitted-row:last-child{border-bottom:0}.submitted-row strong{text-align:right}.submitted-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px}.submitted-actions a{display:inline-flex;padding:10px 14px;border-radius:8px;text-decoration:none;font-weight:700}.submitted-call{background:#e0f2fe;color:#075985}.submitted-wa{background:#dcfce7;color:#166534}@media(max-width:650px){.callback-grid{grid-template-columns:1fr}.submitted-row{align-items:flex-start;flex-direction:column;gap:3px}.submitted-row strong{text-align:left}}
 </style>
-  <script>
-/* Future Secure Providers - Website Form -> CRM Bridge
-   Keeps existing form UI/HTML unchanged and only adds CRM lead creation.
-*/
-(function () {
-  var SUPABASE_URL = "https://cjwxirpwzluynymwjzxl.supabase.co";
-  var SUPABASE_KEY = "sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz";
-
-  function getSupabase() {
-    if (window.supabase && window.supabase.createClient) return Promise.resolve(window.supabase);
-    return new Promise(function (resolve, reject) {
-      var existing = document.querySelector('script[data-fsp-supabase-sdk="1"]');
-      if (existing) {
-        existing.addEventListener("load", function () {
-          if (window.supabase && window.supabase.createClient) resolve(window.supabase);
-          else reject(new Error("Supabase SDK not available"));
-        }, { once: true });
-        existing.addEventListener("error", function () { reject(new Error("Failed to load Supabase SDK")); }, { once: true });
-        return;
-      }
-      var script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-      script.async = true;
-      script.setAttribute("data-fsp-supabase-sdk", "1");
-      script.onload = function () {
-        if (window.supabase && window.supabase.createClient) resolve(window.supabase);
-        else reject(new Error("Supabase SDK not available"));
-      };
-      script.onerror = function () { reject(new Error("Failed to load Supabase SDK")); };
-      document.head.appendChild(script);
-    });
-  }
-
-  function cleanMobile(value) {
-    var mobile = String(value || "").replace(/\D/g, "");
-    if (mobile.length === 12 && mobile.indexOf("91") === 0) mobile = mobile.slice(2);
-    if (mobile.length === 11 && mobile.charAt(0) === "0") mobile = mobile.slice(1);
-    return mobile;
-  }
-
-  function sourceFromSession() {
-    var source = "";
-    try { source = sessionStorage.getItem("fsp_utm_source") || ""; } catch (e) {}
-    return source === "MetaAds" ? "Meta Ads" : "Website";
-  }
-
-  window.saveFspLead = async function (payload) {
-    payload = payload || {};
-    var fullName = String(payload.full_name || "").trim();
-    var mobile = cleanMobile(payload.mobile_number);
-
-    if (fullName.length < 2 || !/^[6-9]\d{9}$/.test(mobile)) {
-      return { success: false, error: "Invalid name or mobile number" };
-    }
-
-    try {
-      var supabase = await getSupabase();
-      var client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
-      var existing = await client.from("leads").select("id").eq("mobile_number", mobile).limit(1);
-      if (existing.error) throw existing.error;
-
-      if (existing.data && existing.data.length) {
-        return { success: true, duplicate: true, lead_id: existing.data[0].id };
-      }
-
-      var notes = String(payload.notes || "").trim();
-      var product = String(payload.product || "").trim();
-      if (product) notes = notes ? "Product: " + product + " | " + notes : "Product: " + product;
-
-      var rpc = await client.rpc("handle_website_lead_creation", {
-        p_full_name: fullName,
-        p_mobile_number: mobile,
-        p_city: payload.city ? String(payload.city).trim() : null,
-        p_lead_source: payload.lead_source || sourceFromSession(),
-        p_pincode: payload.pincode ? String(payload.pincode).trim() : null,
-        p_family_members: payload.family_members ? String(payload.family_members) : null,
-        p_medical_info: payload.medical_info ? String(payload.medical_info) : "இல்லை",
-        p_notes: notes || null
-      });
-
-      if (rpc.error) throw rpc.error;
-      if (!rpc.data || !rpc.data.success) throw new Error("Lead creation failed");
-
-      return {
-        success: true,
-        duplicate: false,
-        lead_id: rpc.data.lead_id,
-        full_name: fullName,
-        mobile_number: mobile
-      };
-    } catch (error) {
-      console.error("FSP CRM lead save failed:", error);
-      return { success: false, error: error && error.message ? error.message : String(error) };
-    }
-  };
-})();
-
-</script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="crm-form-bridge.js"></script>
 </head>
 <body>
 <header>
@@ -156,7 +61,7 @@
 <div class="field"><label for="expiry">Policy Expiry Date</label><input id="expiry" name="expiry" type="date"></div>
 <div class="field"><label for="company">Existing Insurance Company</label><input id="company" name="company" type="text" placeholder="Existing insurer name"></div>
 <div class="field"><label for="claim">Previous Claim</label><select id="claim" name="claim"><option value="">Select</option><option>Yes</option><option>No</option><option>Not Sure</option></select></div>
-<div class="field full"><label for="message">Additional Requirements / Message</label><textarea id="message" name="message" placeholder="உங்களுக்கு தேவையான coverage / renewal / quote details இங்கே எழுதலாம்."></textarea></div>
+<div class="field full"><div class="callback-section"><h3>எப்போது தொடர்பு கொள்ளலாம்?</h3><p>உங்களுக்கு வசதியான தேதி மற்றும் நேரத்தை தேர்வு செய்யுங்கள். இது CRM Calendar-ல் appointment ஆக save செய்யப்படும்.</p><div class="callback-grid"><div><label for="callbackDate">Callback Date *</label><input id="callbackDate" name="callbackDate" type="date" required></div><div><label for="callbackTime">Callback Time *</label><select id="callbackTime" name="callbackTime" required><option value="">Select Time</option><option>09:00 AM</option><option>09:30 AM</option><option>10:00 AM</option><option>10:30 AM</option><option>11:00 AM</option><option>11:30 AM</option><option>12:00 PM</option><option>12:30 PM</option><option>01:00 PM</option><option>01:30 PM</option><option>02:00 PM</option><option>02:30 PM</option><option>03:00 PM</option><option>03:30 PM</option><option>04:00 PM</option><option>04:30 PM</option><option>05:00 PM</option><option>05:30 PM</option><option>06:00 PM</option><option>06:30 PM</option><option>07:00 PM</option></select></div></div></div></div><div class="field full"><label for="message">Additional Requirements / Message</label><textarea id="message" name="message" placeholder="உங்களுக்கு தேவையான coverage / renewal / quote details இங்கே எழுதலாம்."></textarea></div>
 </div>
 <div class="consent-box">
 <label class="consent-label" for="consent">
@@ -168,6 +73,7 @@
 <div class="actions"><button class="btn primary" type="submit">Get Vehicle Insurance Quote</button><a class="btn secondary" href="tel:+919585905905">Call Advisor</a></div>
 <p class="privacy">இந்த form தற்போது enquiry details-ஐ validate செய்வதற்காக உள்ளது. எந்த online payment-மும் இங்கே கேட்கப்படாது.</p>
 </form>
+<div class="submitted-confirmation" id="submittedConfirmation"><h3>✓ SUBMITTED DETAILS</h3><div class="submitted-row"><span>Name</span><strong id="submittedName"></strong></div><div class="submitted-row"><span>Mobile</span><strong id="submittedMobile"></strong></div><div class="submitted-row"><span>Vehicle</span><strong id="submittedVehicle"></strong></div><div class="submitted-row"><span>Callback Date</span><strong id="submittedDate"></strong></div><div class="submitted-row"><span>Callback Time</span><strong id="submittedTime"></strong></div><div class="submitted-actions"><a class="submitted-call" href="tel:+919585905905">Call Advisor</a><a class="submitted-wa" id="submittedWhatsApp" href="#" target="_blank" rel="noopener">WhatsApp</a></div></div>
 <div class="direct"><div><strong>நேரடியாக பேச வேண்டுமா?</strong><div>Future Secure Providers</div></div><div class="phones"><a href="tel:+919585905905">9585 905 905</a><a href="tel:+919363705905">9363 705 905</a></div></div>
 </div></div></section>
 </main>
@@ -179,6 +85,9 @@
  const mobile=document.getElementById('mobile');
  const consent=document.getElementById('consent');
  const consentBox=document.querySelector('.consent-box');
+ const callbackDate=document.getElementById('callbackDate');
+ const callbackTime=document.getElementById('callbackTime');
+ if(callbackDate){const d=new Date();callbackDate.min=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
  mobile.addEventListener('input',()=>{mobile.value=mobile.value.replace(/\D/g,'').slice(0,10)});
  consent.addEventListener('change',()=>{
    consentBox.classList.toggle('invalid',!consent.checked);
@@ -192,6 +101,8 @@
    const consentBad=!consent.checked;
    consentBox.classList.toggle('invalid',consentBad);
    if(consentBad) ok=false;
+   const callbackBad=!callbackDate.value || !callbackTime.value;
+   if(callbackBad){callbackDate.style.borderColor='#dc2626';callbackTime.style.borderColor='#dc2626';ok=false;}else{callbackDate.style.borderColor='';callbackTime.style.borderColor='';}
    if(!ok){
      const first=document.querySelector('.field.invalid input,.field.invalid select,.field.invalid textarea');
      if(first){first.focus(); return;}
@@ -211,6 +122,8 @@
        'Policy Expiry: ' + (data.get('expiry') || ''),
        'Existing Insurance Company: ' + (data.get('company') || ''),
        'Previous Claim: ' + (data.get('claim') || ''),
+       'Callback Date: ' + (data.get('callbackDate') || ''),
+       'Callback Time: ' + (data.get('callbackTime') || ''),
        'Message: ' + (data.get('message') || ''),
        'Consent: Yes'
      ].join(' | ')
@@ -222,8 +135,28 @@
      return;
    }
 
+   try{
+     const supabaseClient=window.supabase.createClient('https://cjwxirpwzluynymwjzxl.supabase.co','sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz');
+     const appt=await supabaseClient.rpc('handle_appointment_booking',{
+       p_customer_name:data.get('name'),
+       p_mobile_number:data.get('mobile'),
+       p_appointment_date:data.get('callbackDate'),
+       p_appointment_time:data.get('callbackTime'),
+       p_notes:'Vehicle Insurance enquiry | Vehicle: '+(data.get('vehicleType')||'')+' | Registration: '+(data.get('registration')||'')
+     });
+     if(appt.error) console.error('Vehicle appointment save failed:',appt.error);
+   }catch(err){console.error('Vehicle appointment connection failed:',err);}
+
    success.style.display='block';
-   form.reset();
+   form.style.display='none';
+   document.getElementById('submittedConfirmation').classList.add('show');
+   document.getElementById('submittedName').textContent=data.get('name')||'—';
+   document.getElementById('submittedMobile').textContent=data.get('mobile')||'—';
+   document.getElementById('submittedVehicle').textContent=(data.get('vehicleType')||'—')+' / '+(data.get('insuranceType')||'—');
+   document.getElementById('submittedDate').textContent=data.get('callbackDate')||'—';
+   document.getElementById('submittedTime').textContent=data.get('callbackTime')||'—';
+   const waMessage=['Vehicle Insurance Enquiry','','Name: '+(data.get('name')||''),'Mobile: '+(data.get('mobile')||''),'Vehicle Type: '+(data.get('vehicleType')||''),'Insurance Type: '+(data.get('insuranceType')||''),'Callback Date: '+(data.get('callbackDate')||''),'Callback Time: '+(data.get('callbackTime')||''),'Registration: '+(data.get('registration')||''),'Message: '+(data.get('message')||'')].join('\n');
+   document.getElementById('submittedWhatsApp').href='https://wa.me/919585905905?text='+encodeURIComponent(waMessage);
    window.scrollTo({top:success.getBoundingClientRect().top+window.scrollY-30,behavior:'smooth'});
  });
 })();
