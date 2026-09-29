@@ -1115,6 +1115,15 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
 
     const selectedMembers = [];
 
+    // At least one family member must be selected before submission.
+    const selectedMemberChecks = Array.from(form.querySelectorAll('.member-check:checked'));
+    if (selectedMemberChecks.length === 0) {
+        alert('குறைந்தது ஒரு குடும்ப உறுப்பினரை தேர்வு செய்யவும்.');
+        const firstMemberCheck = form.querySelector('.member-check');
+        if (firstMemberCheck) firstMemberCheck.focus();
+        return;
+    }
+
     // Every selected family member must have an age before submission.
     let missingMemberAgeInput = null;
     form.querySelectorAll('.member-card').forEach(card => {
