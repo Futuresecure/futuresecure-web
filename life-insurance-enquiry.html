@@ -452,6 +452,19 @@ textarea{min-height:120px;resize:vertical}
       return;
     }
 
+    form.style.display="none";
+    document.getElementById("submittedConfirmation").classList.add("show");
+    document.getElementById("submittedName").textContent=data.get("name")||"—";
+    document.getElementById("submittedMobile").textContent=data.get("mobile")||"—";
+    document.getElementById("submittedAge").textContent=data.get("age")||"—";
+    document.getElementById("submittedDate").textContent=data.get("callbackDate")||"—";
+    document.getElementById("submittedTime").textContent=data.get("callbackTime")||"—";
+    document.getElementById("submittedWhatsApp").href="https://wa.me/919585905905?text="+encodeURIComponent(message);
+    status.className="form-status show info";
+    status.textContent="Enquiry submitted successfully.";
+
+    // Run secondary calendar/sheet sync after success UI.
+    (async function(){
     try {
       const supabaseClient=window.supabase.createClient("https://cjwxirpwzluynymwjzxl.supabase.co","sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz");
       const appt=await supabaseClient.rpc("handle_appointment_booking",{
@@ -499,16 +512,8 @@ textarea{min-height:120px;resize:vertical}
       console.error('Google Sheet/Calendar sync failed:', googleError);
     }
 
-    form.style.display="none";
-    document.getElementById("submittedConfirmation").classList.add("show");
-    document.getElementById("submittedName").textContent=data.get("name")||"—";
-    document.getElementById("submittedMobile").textContent=data.get("mobile")||"—";
-    document.getElementById("submittedAge").textContent=data.get("age")||"—";
-    document.getElementById("submittedDate").textContent=data.get("callbackDate")||"—";
-    document.getElementById("submittedTime").textContent=data.get("callbackTime")||"—";
-    document.getElementById("submittedWhatsApp").href="https://wa.me/919585905905?text="+encodeURIComponent(message);
-    status.className="form-status show info";
-    status.textContent="Enquiry submitted successfully.";
+    })();
+
   });
 })();
 </script>
