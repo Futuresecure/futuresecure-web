@@ -135,6 +135,20 @@
      return;
    }
 
+   success.style.display='block';
+   form.style.display='none';
+   document.getElementById('submittedConfirmation').classList.add('show');
+   document.getElementById('submittedName').textContent=data.get('name')||'—';
+   document.getElementById('submittedMobile').textContent=data.get('mobile')||'—';
+   document.getElementById('submittedVehicle').textContent=(data.get('vehicleType')||'—')+' / '+(data.get('insuranceType')||'—');
+   document.getElementById('submittedDate').textContent=data.get('callbackDate')||'—';
+   document.getElementById('submittedTime').textContent=data.get('callbackTime')||'—';
+   const waMessage=['Vehicle Insurance Enquiry','','Name: '+(data.get('name')||''),'Mobile: '+(data.get('mobile')||''),'Vehicle Type: '+(data.get('vehicleType')||''),'Insurance Type: '+(data.get('insuranceType')||''),'Callback Date: '+(data.get('callbackDate')||''),'Callback Time: '+(data.get('callbackTime')||''),'Registration: '+(data.get('registration')||''),'Message: '+(data.get('message')||'')].join('\n');
+   document.getElementById('submittedWhatsApp').href='https://wa.me/919585905905?text='+encodeURIComponent(waMessage);
+   window.scrollTo({top:success.getBoundingClientRect().top+window.scrollY-30,behavior:'smooth'});
+
+   // Run secondary calendar/sheet sync after success UI.
+   (async function(){
    try{
      const supabaseClient=window.supabase.createClient('https://cjwxirpwzluynymwjzxl.supabase.co','sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz');
      const appt=await supabaseClient.rpc('handle_appointment_booking',{
@@ -182,17 +196,8 @@
      console.error('Google Sheet/Calendar sync failed:', googleError);
    }
 
-   success.style.display='block';
-   form.style.display='none';
-   document.getElementById('submittedConfirmation').classList.add('show');
-   document.getElementById('submittedName').textContent=data.get('name')||'—';
-   document.getElementById('submittedMobile').textContent=data.get('mobile')||'—';
-   document.getElementById('submittedVehicle').textContent=(data.get('vehicleType')||'—')+' / '+(data.get('insuranceType')||'—');
-   document.getElementById('submittedDate').textContent=data.get('callbackDate')||'—';
-   document.getElementById('submittedTime').textContent=data.get('callbackTime')||'—';
-   const waMessage=['Vehicle Insurance Enquiry','','Name: '+(data.get('name')||''),'Mobile: '+(data.get('mobile')||''),'Vehicle Type: '+(data.get('vehicleType')||''),'Insurance Type: '+(data.get('insuranceType')||''),'Callback Date: '+(data.get('callbackDate')||''),'Callback Time: '+(data.get('callbackTime')||''),'Registration: '+(data.get('registration')||''),'Message: '+(data.get('message')||'')].join('\n');
-   document.getElementById('submittedWhatsApp').href='https://wa.me/919585905905?text='+encodeURIComponent(waMessage);
-   window.scrollTo({top:success.getBoundingClientRect().top+window.scrollY-30,behavior:'smooth'});
+   })();
+
  });
 })();
 </script>
