@@ -1057,6 +1057,41 @@ function escapeHtml(value) {
     };
 })();
 
+const quoteForm = document.getElementById('quoteForm');
+if (quoteForm) {
+    // Show a clear age-specific message instead of the browser's generic
+    // "Please fill out this field" message.
+    quoteForm.addEventListener('invalid', function(e) {
+        const input = e.target;
+        if (!input || !input.classList || !input.classList.contains('age-input')) return;
+
+        let memberName = 'குடும்ப உறுப்பினரின்';
+        const card = input.closest('.member-card');
+
+        if (card) {
+            const check = card.querySelector('.member-check');
+            if (check?.id === 'sonCheck') {
+                const item = input.closest('.child-item');
+                memberName = item?.querySelector('.child-name')?.textContent?.trim() || 'Son';
+            } else if (check?.id === 'daughterCheck') {
+                const item = input.closest('.child-item');
+                memberName = item?.querySelector('.child-name')?.textContent?.trim() || 'Daughter';
+            } else {
+                memberName = card.querySelector('.member-head span')?.textContent?.trim() || memberName;
+            }
+        }
+
+        input.setCustomValidity(memberName + ' வயதை உள்ளிடவும்.');
+    }, true);
+
+    quoteForm.addEventListener('input', function(e) {
+        const input = e.target;
+        if (input?.classList?.contains('age-input')) {
+            input.setCustomValidity('');
+        }
+    });
+}
+
 document.getElementById('quoteForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
