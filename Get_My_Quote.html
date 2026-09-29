@@ -819,6 +819,8 @@ function addChild(type) {
             <button type="button" class="remove-child" onclick="removeChild(this)">🗑</button>
         `;
         container.appendChild(item);
+        const ageInput = item.querySelector('.age-input');
+        if (ageInput) ageInput.required = true;
     } else {
         daughterCount++;
         const item = document.createElement('div');
@@ -830,6 +832,8 @@ function addChild(type) {
             <button type="button" class="remove-child" onclick="removeChild(this)">🗑</button>
         `;
         container.appendChild(item);
+        const ageInput = item.querySelector('.age-input');
+        if (ageInput) ageInput.required = true;
     }
 }
 
@@ -882,10 +886,24 @@ document.addEventListener('DOMContentLoaded', () => {
         checkbox.addEventListener('change', () => {
             if (checkbox.id === 'sonCheck') {
                 setChildVisibility('son', checkbox.checked);
+                const container = document.getElementById('sons');
+                if (container) {
+                    container.querySelectorAll('.age-input').forEach(input => {
+                        input.required = checkbox.checked;
+                    });
+                }
             } else if (checkbox.id === 'daughterCheck') {
                 setChildVisibility('daughter', checkbox.checked);
+                const container = document.getElementById('daughters');
+                if (container) {
+                    container.querySelectorAll('.age-input').forEach(input => {
+                        input.required = checkbox.checked;
+                    });
+                }
             } else {
                 setMemberVisibility(card, checkbox.checked);
+                const ageInput = card.querySelector('.age-row .age-input');
+                if (ageInput) ageInput.required = checkbox.checked;
             }
         });
     });
@@ -1061,6 +1079,35 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
     ) ? `${callbackTimeHour}:${callbackTimeMinute} ${callbackTimePeriod}` : '';
 
     const selectedMembers = [];
+
+    // Every selected family member must have an age before submission.
+    let missingMemberAgeInput = null;
+    form.querySelectorAll('.member-card').forEach(card => {
+        const check = card.querySelector('.member-check');
+        if (!check || !check.checked || missingMemberAgeInput) return;
+
+        if (check.id === 'sonCheck' || check.id === 'daughterCheck') {
+            const type = check.id === 'sonCheck' ? 'Son' : 'Daughter';
+            const container = document.getElementById(type === 'Son' ? 'sons' : 'daughters');
+            const childInputs = container ? container.querySelectorAll('.child-item .age-input') : [];
+            childInputs.forEach(input => {
+                if (!String(input.value || '').trim() && !missingMemberAgeInput) {
+                    missingMemberAgeInput = input;
+                }
+            });
+        } else {
+            const ageInput = card.querySelector('.age-row .age-input');
+            if (ageInput && !String(ageInput.value || '').trim()) {
+                missingMemberAgeInput = ageInput;
+            }
+        }
+    });
+
+    if (missingMemberAgeInput) {
+        alert('தேர்ந்தெடுத்த ஒவ்வொரு குடும்ப உறுப்பினருக்கும் வயதை கட்டாயமாக உள்ளிடவும்.');
+        missingMemberAgeInput.focus();
+        return;
+    }
 
     form.querySelectorAll('.member-card').forEach(card => {
         const check = card.querySelector('.member-check');
