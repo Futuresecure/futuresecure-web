@@ -147,6 +147,41 @@
      if(appt.error) console.error('Vehicle appointment save failed:',appt.error);
    }catch(err){console.error('Vehicle appointment connection failed:',err);}
 
+   try {
+     await fetch(
+       'https://script.google.com/macros/s/AKfycbyOSFOeZZq-UkKyX5TBX7FK7FmEMswDYquskgF6NBzQ1NlOHpNRV5fhnfrr-DyHw0iR4A/exec',
+       {
+         method: 'POST',
+         mode: 'no-cors',
+         headers: {'Content-Type': 'text/plain;charset=utf-8'},
+         body: JSON.stringify({
+           product: 'Vehicle Insurance',
+           name: data.get('name') || '',
+           mobile: data.get('mobile') || '',
+           pincode_city: data.get('city') || '',
+           family_members: '',
+           medical_info: '',
+           age: '',
+           occupation: '',
+           income: '',
+           existing_cover: '',
+           purpose: '',
+           vehicle_type: data.get('vehicleType') || '',
+           registration: data.get('registration') || '',
+           expiry: data.get('expiry') || '',
+           insurance_company: data.get('company') || '',
+           insurance_type: data.get('insuranceType') || '',
+           claim: data.get('claim') || '',
+           callback_date: data.get('callbackDate') || '',
+           callback_time: data.get('callbackTime') || '',
+           source: 'Website Vehicle Insurance'
+         })
+       }
+     );
+   } catch (googleError) {
+     console.error('Google Sheet/Calendar sync failed:', googleError);
+   }
+
    success.style.display='block';
    form.style.display='none';
    document.getElementById('submittedConfirmation').classList.add('show');
