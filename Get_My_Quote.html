@@ -1197,6 +1197,65 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
         return;
     }
 
+    const wrapper = document.querySelector('.form-wrap');
+
+    wrapper.innerHTML = `
+        <div class="confirmation">
+            <div class="success-icon">✓</div>
+
+            <div class="celebrate">🎉</div>
+
+            <h1>உங்கள் Quote Request வெற்றிகரமாக பதிவு செய்யப்பட்டுள்ளது.</h1>
+
+            <p class="confirmation-text">
+                உங்கள் Quote request பெறப்பட்டுள்ளது. உங்கள் தேவைக்கேற்ப Health<br>
+                Insurance options குறித்து எங்கள் Insurance Advisor விரைவில் உங்களைத் தொடர்புகொண்டு,<br>
+                தேவையான வழிகாட்டுதலை வழங்குவார்.
+            </p>
+
+            <div class="submitted-title">SUBMITTED DETAILS</div>
+
+            <div class="submitted-details">
+                <div class="detail-row">
+                    <span>பெயர்</span>
+                    <strong>${escapeHtml(name)}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Pincode</span>
+                    <strong>${escapeHtml(pincode)}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>மொபைல்</span>
+                    <strong>+91 ${escapeHtml(mobile)}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>குடும்ப உறுப்பினர்கள்</span>
+                    <strong>${escapeHtml(selectedMembers.join(', ') || '—')}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>அழைக்க வேண்டிய தேதி</span>
+                    <strong>${escapeHtml(callbackDate || '—')}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>விருப்பமான நேரம்</span>
+                    <strong>${escapeHtml(callbackTime || '—')}</strong>
+                </div>
+            </div>
+
+            <div class="assistance">
+                <div>Need immediate assistance?</div>
+                <div class="call-label">CALL US</div>
+                <div class="phone-numbers">
+                    <span>9585 905 905</span>
+                    <i></i>
+                    <span>9363 705 905</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Run secondary calendar/sheet sync after success UI.
+    (async function(){
     // Create a real CRM calendar appointment from the customer's selected callback date/time.
     if (callbackDate && callbackTime) {
         try {
@@ -1260,62 +1319,8 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
         console.error('Google Sheet/Calendar sync failed:', googleError);
     }
 
-    const wrapper = document.querySelector('.form-wrap');
+    })();
 
-    wrapper.innerHTML = `
-        <div class="confirmation">
-            <div class="success-icon">✓</div>
-
-            <div class="celebrate">🎉</div>
-
-            <h1>உங்கள் Quote Request வெற்றிகரமாக பதிவு செய்யப்பட்டுள்ளது.</h1>
-
-            <p class="confirmation-text">
-                உங்கள் Quote request பெறப்பட்டுள்ளது. உங்கள் தேவைக்கேற்ப Health<br>
-                Insurance options குறித்து எங்கள் Insurance Advisor விரைவில் உங்களைத் தொடர்புகொண்டு,<br>
-                தேவையான வழிகாட்டுதலை வழங்குவார்.
-            </p>
-
-            <div class="submitted-title">SUBMITTED DETAILS</div>
-
-            <div class="submitted-details">
-                <div class="detail-row">
-                    <span>பெயர்</span>
-                    <strong>${escapeHtml(name)}</strong>
-                </div>
-                <div class="detail-row">
-                    <span>Pincode</span>
-                    <strong>${escapeHtml(pincode)}</strong>
-                </div>
-                <div class="detail-row">
-                    <span>மொபைல்</span>
-                    <strong>+91 ${escapeHtml(mobile)}</strong>
-                </div>
-                <div class="detail-row">
-                    <span>குடும்ப உறுப்பினர்கள்</span>
-                    <strong>${escapeHtml(selectedMembers.join(', ') || '—')}</strong>
-                </div>
-                <div class="detail-row">
-                    <span>அழைக்க வேண்டிய தேதி</span>
-                    <strong>${escapeHtml(callbackDate || '—')}</strong>
-                </div>
-                <div class="detail-row">
-                    <span>விருப்பமான நேரம்</span>
-                    <strong>${escapeHtml(callbackTime || '—')}</strong>
-                </div>
-            </div>
-
-            <div class="assistance">
-                <div>Need immediate assistance?</div>
-                <div class="call-label">CALL US</div>
-                <div class="phone-numbers">
-                    <span>9585 905 905</span>
-                    <i></i>
-                    <span>9363 705 905</span>
-                </div>
-            </div>
-        </div>
-    `;
 });
 </script>
 </body>
