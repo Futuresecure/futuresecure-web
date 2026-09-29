@@ -477,7 +477,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
 
               <div class="appointment-field">
                 <label class="field-label">Preferred Date <span class="required">*</span></label>
-                <input type="date" class="form-input" id="apptDate">
+                <input type="date" class="form-input" id="apptDate" required>
                 <div class="error-message" id="apptDateError"></div>
               </div>
 
@@ -485,7 +485,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
                 <label class="field-label">Preferred Time <span class="required">*</span></label>
 
                 <div class="time-select-group">
-                  <select class="form-select" id="apptTimeHour">
+                  <select class="form-select" id="apptTimeHour" required>
                     <option value="">Hour</option>
                     <option value="09">09</option>
                     <option value="10">10</option>
@@ -499,7 +499,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
                     <option value="06">06</option>
                   </select>
 
-                  <select class="form-select" id="apptTimeMinute">
+                  <select class="form-select" id="apptTimeMinute" required>
                     <option value="">Min</option>
                     <option value="00">00</option>
                     <option value="10">10</option>
@@ -509,7 +509,7 @@ input[type="date"]::-webkit-calendar-picker-indicator{
                     <option value="50">50</option>
                   </select>
 
-                  <select class="form-select" id="apptTimePeriod">
+                  <select class="form-select" id="apptTimePeriod" required>
                     <option value="">AM/PM</option>
                     <option value="AM">AM</option>
                     <option value="PM">PM</option>
