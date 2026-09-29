@@ -1219,6 +1219,47 @@ document.getElementById('quoteForm').addEventListener('submit', async function(e
         }
     }
 
+    // Save the same Health Insurance enquiry to Google Sheets + Google Calendar.
+    // The existing Supabase CRM flow above remains unchanged.
+    try {
+        const googleLeadPayload = {
+            product: 'Health Insurance',
+            name: name,
+            mobile: mobile,
+            pincode_city: 'Pincode: ' + pincode,
+            family_members: selectedMembers.join(', '),
+            medical_info: medicalInfo,
+            age: '',
+            occupation: '',
+            income: '',
+            existing_cover: '',
+            purpose: '',
+            vehicle_type: '',
+            registration: '',
+            expiry: '',
+            insurance_company: '',
+            insurance_type: '',
+            claim: '',
+            callback_date: callbackDate,
+            callback_time: callbackTime,
+            source: 'Website Health Insurance'
+        };
+
+        await fetch(
+            'https://script.google.com/macros/s/AKfycbyOSFOeZZq-UkKyX5TBX7FK7FmEMswDYquskgF6NBzQ1NlOHpNRV5fhnfrr-DyHw0iR4A/exec',
+            {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                },
+                body: JSON.stringify(googleLeadPayload)
+            }
+        );
+    } catch (googleError) {
+        console.error('Google Sheet/Calendar sync failed:', googleError);
+    }
+
     const wrapper = document.querySelector('.form-wrap');
 
     wrapper.innerHTML = `
