@@ -708,7 +708,7 @@
                 <div class="callback-field">
                     <label for="callbackDate">தேதி</label>
                     <div class="date-picker-wrap">
-                        <input type="date" id="callbackDate" name="callbackDate">
+                        <input type="date" id="callbackDate" name="callbackDate" required>
                         <button type="button" class="picker-btn" id="calendarBtn" aria-label="Open calendar">📅</button>
                     </div>
                 </div>
@@ -716,7 +716,7 @@
                 <div class="callback-field">
                     <label>விருப்பமான நேரம்</label>
                     <div class="callback-time-select-group">
-                        <select id="callbackTimeHour" name="callbackTimeHour" aria-label="Hour">
+                        <select id="callbackTimeHour" name="callbackTimeHour" aria-label="Hour" required>
                             <option value="">Hour</option>
                             <option value="09">09</option>
                             <option value="10">10</option>
@@ -732,7 +732,7 @@
                             <option value="08">08</option>
                         </select>
 
-                        <select id="callbackTimeMinute" name="callbackTimeMinute" aria-label="Minute">
+                        <select id="callbackTimeMinute" name="callbackTimeMinute" aria-label="Minute" required>
                             <option value="">Min</option>
                             <option value="00">00</option>
                             <option value="10">10</option>
@@ -742,7 +742,7 @@
                             <option value="50">50</option>
                         </select>
 
-                        <select id="callbackTimePeriod" name="callbackTimePeriod" aria-label="AM or PM">
+                        <select id="callbackTimePeriod" name="callbackTimePeriod" aria-label="AM or PM" required>
                             <option value="">AM/PM</option>
                             <option value="AM">AM</option>
                             <option value="PM">PM</option>
