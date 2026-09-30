@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<rect width="512" height="512" rx="96" fill="#1a3a3a"/>
+<path d="M256 76 400 130v104c0 94-59 164-144 202-85-38-144-108-144-202V130l144-54Z" fill="#fff"/>
+<path d="M256 126 352 162v72c0 61-36 109-96 141-60-32-96-80-96-141v-72l96-36Z" fill="#00d4ff"/>
+<text x="256" y="270" text-anchor="middle" font-family="Arial,sans-serif" font-size="92" font-weight="700" fill="#1a3a3a">FSP</text>
+</svg>
