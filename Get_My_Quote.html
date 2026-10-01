@@ -914,10 +914,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const calendarBtn = document.getElementById('calendarBtn');
 
     if (callbackDateInput) {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
+        // Website callback appointments can be selected only from tomorrow onward.
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const yyyy = tomorrow.getFullYear();
+        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const dd = String(tomorrow.getDate()).padStart(2, '0');
         callbackDateInput.min = `${yyyy}-${mm}-${dd}`;
     }
 
