@@ -602,10 +602,14 @@ document.addEventListener("DOMContentLoaded", function(){
   const dateInput = document.getElementById("apptDate");
   const submitBtn = document.getElementById("apptSubmitBtn");
 
-  // Same behavior as the original: appointments can be booked from tomorrow.
+  // Website appointments can be booked only from tomorrow onward.
+  // Use local date parts so the minimum date is correct in the customer's timezone.
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  dateInput.min = tomorrow.toISOString().split("T")[0];
+  const yyyy = tomorrow.getFullYear();
+  const mm = String(tomorrow.getMonth() + 1).padStart(2, "0");
+  const dd = String(tomorrow.getDate()).padStart(2, "0");
+  dateInput.min = `${yyyy}-${mm}-${dd}`;
 
   form.addEventListener("submit", async function(e){
     e.preventDefault();
