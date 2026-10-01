@@ -201,5 +201,18 @@
  });
 })();
 </script>
+<script>
+(function () {
+  // Website callback appointments can be selected only from tomorrow onward.
+  const callbackDateInput = document.getElementById('callbackDate');
+  if (!callbackDateInput) return;
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const yyyy = tomorrow.getFullYear();
+  const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+  const dd = String(tomorrow.getDate()).padStart(2, '0');
+  callbackDateInput.min = `${yyyy}-${mm}-${dd}`;
+})();
+</script>
 </body>
 </html>
