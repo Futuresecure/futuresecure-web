@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=23">
+<link rel="manifest" href="./manifest.json?v=24">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -340,16 +340,7 @@ async function enableLeadAlerts(){
    alert(test.data?.sent>0?"Mobile New Lead notifications enabled. Test notification sent.":"Mobile notifications enabled.");
  }catch(e){console.error(e);alert("Unable to enable push notifications. Please try again.");}
 }
-function startLeadAlerts(){
- if(!isMobilePWA()||!currentUser||localStorage.getItem("fsp_lead_alerts")!=="on"||Notification.permission!=="granted")return;
- if(leadAlertsChannel)supabaseClient.removeChannel(leadAlertsChannel);
- leadAlertsChannel=supabaseClient.channel("fsp-new-lead-alerts").on("postgres_changes",{event:"INSERT",schema:"public",table:"leads"},payload=>{
-   const lead=payload.new||{};unseenLeadCount++;localStorage.setItem("fsp_unseen_leads",String(unseenLeadCount));updateLeadAppBadge();
-   const n=new Notification("New Lead Received",{body:(lead.full_name||"New customer")+" · "+(lead.mobile_number||"")+" · "+(lead.lead_source||"CRM"),icon:"./logo.jpg",tag:"lead-"+lead.id});
-   n.onclick=()=>{window.focus();showPage("leads",document.querySelector('[data-page="leads"]'));loadLeads();n.close();};
- }).subscribe();
- updateLeadAppBadge();
-}
+function startLeadAlerts(){updateLeadAppBadge();}
 function clearLeadBadge(){unseenLeadCount=0;localStorage.setItem("fsp_unseen_leads","0");updateLeadAppBadge();}
 async function initializeAuth(){try{const{data:{session},error}=await supabaseClient.auth.getSession();if(error)throw error;if(session){currentUser=session.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();await loadCRMData();startLeadAlerts();}else{showLoginPage();}}catch(err){console.error("Error initializing auth:",err);showLoginPage();}}
 async function initializeAuthStateListener(){supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_IN"&&session){currentUser=session.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();loadCRMData();startLeadAlerts();}else if(event==="SIGNED_OUT"){currentUser=null;clearCRMData();updateHeaderForLoggedOut();showLoginPage();}else if(event==="TOKEN_REFRESHED"){console.log("Token refreshed");}});}
@@ -2182,7 +2173,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=23', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=24', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
