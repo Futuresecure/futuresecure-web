@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=26">
+<link rel="manifest" href="./manifest.json?v=27">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -75,33 +75,37 @@ button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer}.btn-primary{
 
 /* WHATSAPP INBOX */
 .wa-inbox-card{overflow:hidden}
-.wa-layout{display:grid;grid-template-columns:320px minmax(0,1fr);height:clamp(520px,calc(100dvh - 260px),720px);min-height:0;max-height:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff}.wa-list{border-right:1px solid var(--border);overflow-y:auto;background:#f8fafc}.wa-list-head{padding:16px;border-bottom:1px solid var(--border);background:#fff}.wa-contact{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}.wa-contact:hover,.wa-contact.active{background:#eaf6f4}.wa-contact-name{font-weight:700;margin-bottom:4px}.wa-contact-meta{font-size:12px;color:var(--muted)}.wa-chat{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;min-width:0;min-height:0;height:100%;overflow:hidden}.wa-chat-head{padding:16px 18px;border-bottom:1px solid var(--border);min-width:0}.wa-messages{min-height:0;height:100%;overflow-y:scroll;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:20px;background:#eef2f3}.wa-bubble{max-width:78%;padding:10px 12px;border-radius:10px;margin-bottom:10px;background:#fff;white-space:pre-wrap;overflow-wrap:anywhere}.wa-bubble.outbound{margin-left:auto;background:#d9fdd3}.wa-time{display:block;text-align:right;font-size:10px;color:var(--muted);margin-top:5px}.wa-placeholder{margin:auto;color:var(--muted);text-align:center;padding:30px}@media(max-width:768px){.wa-layout{grid-template-columns:1fr;height:calc(100dvh - 170px);min-height:420px;max-height:none}.wa-list{border-right:0}.wa-chat{display:none}.wa-layout.chat-open .wa-list{display:none}.wa-layout.chat-open .wa-chat{display:flex}}
-.wa-composer{display:flex;flex:0 0 auto;gap:10px;padding:12px;border-top:1px solid var(--border);background:#fff;position:relative;z-index:2}.wa-composer textarea{flex:1 1 auto;min-width:0;height:44px;min-height:44px;max-height:88px;resize:none;overflow-y:auto}.wa-composer button{min-width:86px}.wa-send-status{font-size:12px;flex:0 0 auto;background:#fff;color:var(--muted);position:relative;z-index:2}.wa-send-status:empty{display:none}.wa-send-status:not(:empty){padding:6px 12px 10px}@media(max-width:768px){
-.wa-inbox-card{overflow:visible}
-#page-whatsapp.card{padding:14px}
-#page-whatsapp .wa-layout{width:100%;max-width:100%;height:calc(100dvh - 300px);min-height:460px;overflow:hidden}
-#page-whatsapp .wa-layout.chat-open{height:calc(100dvh - 190px)}
-#page-whatsapp .wa-chat{width:100%;min-width:0;overflow:hidden;flex-direction:column}
-#page-whatsapp .wa-chat-head{flex:0 0 auto;width:100%;overflow:hidden}
-#page-whatsapp .wa-messages{flex:1 1 auto;width:100%;min-width:0;height:auto;overflow-y:auto;overflow-x:hidden;padding:12px}
-#page-whatsapp .wa-bubble{max-width:86%;min-width:0;word-break:break-word;overflow-wrap:anywhere}
-#page-whatsapp .wa-composer{width:100%;min-width:0;padding:8px;gap:6px}
-#page-whatsapp .wa-composer textarea{width:100%;min-width:0;flex:1 1 0}
-#page-whatsapp .wa-composer button{min-width:64px;padding-left:8px;padding-right:8px}
-}
+.wa-layout{display:grid;grid-template-columns:320px minmax(0,1fr);height:clamp(520px,calc(100dvh - 260px),720px);border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;min-width:0}
+.wa-list{min-width:0;border-right:1px solid var(--border);overflow-y:auto;background:#f8fafc}
+.wa-list-head{padding:16px;border-bottom:1px solid var(--border);background:#fff}
+.wa-contact{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}
+.wa-contact:hover,.wa-contact.active{background:#eaf6f4}
+.wa-contact-name{font-weight:700;margin-bottom:4px}.wa-contact-meta{font-size:12px;color:var(--muted)}
+.wa-chat{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;min-width:0;min-height:0;height:100%;overflow:hidden}
+.wa-chat-head{padding:16px 18px;border-bottom:1px solid var(--border);min-width:0}
+.wa-messages{min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden;padding:20px;background:#eef2f3}
+.wa-bubble{width:fit-content;max-width:78%;padding:10px 12px;border-radius:10px;margin-bottom:10px;background:#fff;white-space:pre-wrap;word-break:normal;overflow-wrap:anywhere}
+.wa-bubble.outbound{margin-left:auto;background:#d9fdd3}
+.wa-time{display:block;text-align:right;font-size:10px;color:var(--muted);margin-top:5px}
+.wa-placeholder{margin:auto;color:var(--muted);text-align:center;padding:30px}
+.wa-composer{display:flex;align-items:center;gap:8px;padding:10px;border-top:1px solid var(--border);background:#fff;min-width:0}
+.wa-composer textarea{flex:1 1 0;width:0;min-width:0;height:44px;min-height:44px;max-height:88px;resize:none;overflow-y:auto}
+.wa-composer button{flex:0 0 auto;min-width:64px}
+.wa-send-status{font-size:12px;background:#fff;color:var(--muted)}
+.wa-send-status:empty{display:none}.wa-send-status:not(:empty){padding:6px 12px 10px}
 @media(max-width:768px){
-#whatsappPage .wa-inbox-card{overflow:hidden}
-#whatsappPage .wa-layout{display:block!important;width:100%!important;max-width:100%!important;height:calc(100dvh - 300px)!important;min-height:460px!important;overflow:hidden!important}
-#whatsappPage .wa-layout .wa-list{display:block;width:100%;height:100%;border-right:0}
-#whatsappPage .wa-layout .wa-chat{display:none!important;width:100%!important;min-width:0!important;height:100%!important;overflow:hidden!important;flex-direction:column!important}
-#whatsappPage .wa-layout.chat-open .wa-list{display:none!important}
-#whatsappPage .wa-layout.chat-open .wa-chat{display:flex!important}
-#whatsappPage .wa-chat-head{width:100%;min-width:0;flex:0 0 auto;overflow:hidden}
-#whatsappPage .wa-messages{width:100%!important;min-width:0!important;max-width:100%!important;flex:1 1 0!important;height:0!important;overflow-y:auto!important;overflow-x:hidden!important;padding:12px!important}
-#whatsappPage .wa-bubble{display:block!important;width:auto!important;max-width:86%!important;min-width:0!important;white-space:pre-wrap!important;word-break:normal!important;overflow-wrap:anywhere!important}
-#whatsappPage .wa-composer{display:flex;width:100%!important;max-width:100%!important;min-width:0!important;flex:0 0 auto!important;padding:8px!important;gap:6px!important;overflow:hidden!important}
-#whatsappPage .wa-composer textarea{display:block!important;width:auto!important;min-width:0!important;max-width:none!important;flex:1 1 0!important}
-#whatsappPage .wa-composer button{flex:0 0 auto!important;min-width:56px!important;padding-left:8px!important;padding-right:8px!important}
+ #whatsappPage{width:100%;min-width:0}
+ #whatsappPage>.wa-inbox-card{width:100%;min-width:0;padding:14px;overflow:hidden}
+ #whatsappPage .wa-layout{display:block;width:100%;height:calc(100dvh - 300px);min-height:460px;max-height:none}
+ #whatsappPage .wa-list{display:block;width:100%;height:100%;border-right:0}
+ #whatsappPage .wa-chat{display:none;width:100%;height:100%;min-width:0}
+ #whatsappPage .wa-layout.chat-open .wa-list{display:none}
+ #whatsappPage .wa-layout.chat-open .wa-chat{display:grid}
+ #whatsappPage .wa-messages{width:100%;min-width:0;padding:12px}
+ #whatsappPage .wa-bubble{max-width:84%}
+ #whatsappPage .wa-composer{width:100%;min-width:0;padding:8px 6px;gap:5px}
+ #whatsappPage .wa-composer textarea{width:0;min-width:0}
+ #whatsappPage .wa-composer button{min-width:48px;padding:9px 7px}
 }
 </style>
 </head>
@@ -2199,7 +2203,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=26', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=27', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
