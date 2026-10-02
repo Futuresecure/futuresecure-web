@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=20">
+<link rel="manifest" href="./manifest.json?v=21">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -85,7 +85,7 @@ button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer}.btn-primary{
 <div class="brand"><img class="brand-logo" src="./logo.jpg" alt="Future Secure Providers"><div class="brand-name">Future Secure<br>Providers</div><span>CRM SYSTEM</span></div>
 <div class="menu-label">MAIN MENU</div>
 <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard',this)">📊 Dashboard</div>
-<div class="nav-item" data-page="leads" onclick="showPage('leads',this);loadLeads()">👥 Leads</div>
+<div class="nav-item" data-page="leads" onclick="showPage('leads',this);clearLeadBadge();loadLeads()">👥 Leads</div>
 <div class="nav-item" data-page="addLead" onclick="openNewLead()">➕ Add New Lead</div>
 <div class="menu-label">MANAGEMENT</div>
 <div class="nav-item" data-page="followups" onclick="showPage('followups',this);loadFollowups()">📞 Follow-ups</div>
@@ -95,7 +95,7 @@ button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer}.btn-primary{
 <div class="nav-item" data-page="waTemplates" onclick="showPage('waTemplates',this);loadWhatsAppTemplates()">📝 WhatsApp Templates</div>
 <div class="nav-item" data-page="reports" onclick="showPage('reports',this);loadLeads()">📊 Reports</div>
 <div class="nav-item" data-page="pipeline" onclick="showPage('pipeline',this);loadPipeline()">🎯 Pipeline</div>
-<div class="sidebar-bottom"><div class="nav-item" data-page="settings" onclick="showPage('settings',this)">⚙️ Settings</div></div>
+<div class="sidebar-bottom"><div class="nav-item" onclick="enableLeadAlerts()">🔔 Enable Lead Alerts</div><div class="nav-item" data-page="settings" onclick="showPage('settings',this)">⚙️ Settings</div></div>
 </aside>
 <div class="sidebar-overlay" onclick="closeSidebar()"></div>
 
@@ -316,8 +316,30 @@ const SUPABASE_URL="https://cjwxirpwzluynymwjzxl.supabase.co";
 const SUPABASE_KEY="sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let currentUser=null;
-async function initializeAuth(){try{const{data:{session},error}=await supabaseClient.auth.getSession();if(error)throw error;if(session){currentUser=session.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();await loadCRMData();}else{showLoginPage();}}catch(err){console.error("Error initializing auth:",err);showLoginPage();}}
-async function initializeAuthStateListener(){supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_IN"&&session){currentUser=session.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();loadCRMData();}else if(event==="SIGNED_OUT"){currentUser=null;clearCRMData();updateHeaderForLoggedOut();showLoginPage();}else if(event==="TOKEN_REFRESHED"){console.log("Token refreshed");}});}
+let leadAlertsChannel=null;
+let unseenLeadCount=Number(localStorage.getItem("fsp_unseen_leads")||0);
+async function updateLeadAppBadge(){
+ try{if("setAppBadge" in navigator){if(unseenLeadCount>0)await navigator.setAppBadge(unseenLeadCount);else if("clearAppBadge" in navigator)await navigator.clearAppBadge();}}catch(e){}
+}
+async function enableLeadAlerts(){
+ if(!("Notification" in window)){alert("Notifications are not supported on this browser.");return;}
+ const permission=await Notification.requestPermission();
+ localStorage.setItem("fsp_lead_alerts",permission==="granted"?"on":"off");
+ if(permission==="granted"){startLeadAlerts();alert("New Lead alerts enabled.");}else alert("Notification permission was not enabled.");
+}
+function startLeadAlerts(){
+ if(!currentUser||localStorage.getItem("fsp_lead_alerts")!=="on"||Notification.permission!=="granted")return;
+ if(leadAlertsChannel)supabaseClient.removeChannel(leadAlertsChannel);
+ leadAlertsChannel=supabaseClient.channel("fsp-new-lead-alerts").on("postgres_changes",{event:"INSERT",schema:"public",table:"leads"},payload=>{
+   const lead=payload.new||{};unseenLeadCount++;localStorage.setItem("fsp_unseen_leads",String(unseenLeadCount));updateLeadAppBadge();
+   const n=new Notification("New Lead Received",{body:(lead.full_name||"New customer")+" · "+(lead.mobile_number||"")+" · "+(lead.lead_source||"CRM"),icon:"./logo.jpg",tag:"lead-"+lead.id});
+   n.onclick=()=>{window.focus();showPage("leads",document.querySelector('[data-page="leads"]'));loadLeads();n.close();};
+ }).subscribe();
+ updateLeadAppBadge();
+}
+function clearLeadBadge(){unseenLeadCount=0;localStorage.setItem("fsp_unseen_leads","0");updateLeadAppBadge();}
+async function initializeAuth(){try{const{data:{session},error}=await supabaseClient.auth.getSession();if(error)throw error;if(session){currentUser=session.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();await loadCRMData();startLeadAlerts();}else{showLoginPage();}}catch(err){console.error("Error initializing auth:",err);showLoginPage();}}
+async function initializeAuthStateListener(){supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_IN"&&session){currentUser=session.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();loadCRMData();startLeadAlerts();}else if(event==="SIGNED_OUT"){currentUser=null;clearCRMData();updateHeaderForLoggedOut();showLoginPage();}else if(event==="TOKEN_REFRESHED"){console.log("Token refreshed");}});}
 async function handleLoginSubmit(event){event.preventDefault();const email=document.getElementById("loginEmail").value.trim();const password=document.getElementById("loginPassword").value;const submitButton=document.getElementById("loginSubmitButton");const errorDiv=document.getElementById("loginErrorMessage");submitButton.disabled=true;submitButton.textContent="Signing In...";errorDiv.classList.remove("show");try{const{data,error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;currentUser=data.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();await loadCRMData();}catch(err){console.error("Sign in error:",err);showLoginError(err.message||"Sign in failed. Please check your credentials and try again.");}finally{submitButton.disabled=false;submitButton.textContent="Sign In";}}
 function showLoginError(message){const errorDiv=document.getElementById("loginErrorMessage");errorDiv.textContent=message;errorDiv.classList.add("show");}
 async function handleLogout(){try{const{error}=await supabaseClient.auth.signOut();if(error)throw error;currentUser=null;clearCRMData();updateHeaderForLoggedOut();showLoginPage();}catch(err){console.error("Sign out error:",err);alert("Error signing out: "+err.message);}}
@@ -2146,7 +2168,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=20', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=21', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
