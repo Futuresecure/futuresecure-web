@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=16">
+<link rel="manifest" href="./manifest.json?v=17">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -22,7 +22,7 @@ body{background:var(--bg);color:var(--text)}
 .app{display:flex;min-height:100vh}
 .sidebar{width:220px;background:var(--sidebar);color:#fff;padding:24px 10px;display:flex;flex-direction:column;min-height:100vh}
 .brand{display:flex;flex-direction:column;align-items:center;text-align:center;padding:6px 10px 22px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:18px}
-.brand-logo{width:72px;height:72px;object-fit:contain;display:block;margin:0 auto 10px;border-radius:8px}
+.brand-logo{width:104px;height:104px;object-fit:contain;display:block;margin:0 auto 10px;border-radius:8px}
 .brand-name{font-size:18px;font-weight:700;line-height:1.25;color:#fff;white-space:nowrap}
 .brand span{display:block;font-size:10px;color:#73c7bd;letter-spacing:1.5px;margin-top:7px;font-weight:600}
 .menu-label{font-size:10px;letter-spacing:1px;color:#7d8aa1;padding:10px 14px}
@@ -2145,7 +2145,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=16', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=17', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
