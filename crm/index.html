@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=22">
+<link rel="manifest" href="./manifest.json?v=23">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -322,12 +322,23 @@ async function updateLeadAppBadge(){
  try{if("setAppBadge" in navigator){if(unseenLeadCount>0)await navigator.setAppBadge(unseenLeadCount);else if("clearAppBadge" in navigator)await navigator.clearAppBadge();}}catch(e){}
 }
 function isMobilePWA(){return window.matchMedia("(display-mode: standalone)").matches && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);}
+function urlBase64ToUint8Array(v){const p="=".repeat((4-v.length%4)%4),b=(v+p).replace(/-/g,"+").replace(/_/g,"/"),raw=atob(b);return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));}
 async function enableLeadAlerts(){
  if(!isMobilePWA()){alert("Lead notifications are enabled only in the installed mobile PWA.");return;}
- if(!("Notification" in window)){alert("Notifications are not supported on this device.");return;}
- const permission=await Notification.requestPermission();
- localStorage.setItem("fsp_lead_alerts",permission==="granted"?"on":"off");
- if(permission==="granted"){startLeadAlerts();alert("New Lead alerts enabled.");}else alert("Notification permission was not enabled.");
+ if(!("Notification" in window)||!("serviceWorker" in navigator)||!("PushManager" in window)){alert("Push notifications are not supported on this device.");return;}
+ const permission=await Notification.requestPermission();if(permission!=="granted"){localStorage.setItem("fsp_lead_alerts","off");alert("Notification permission was not enabled.");return;}
+ try{
+   const reg=await navigator.serviceWorker.ready;
+   const {data,error}=await supabaseClient.functions.invoke("push-subscribe",{body:{action:"public_key"}});if(error||!data?.publicKey)throw error||new Error("Push key unavailable");
+   let sub=await reg.pushManager.getSubscription();
+   if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(data.publicKey)});
+   const j=sub.toJSON(),{data:{user}}=await supabaseClient.auth.getUser();
+   const {error:saveErr}=await supabaseClient.from("push_subscriptions").upsert({user_id:user.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,user_agent:navigator.userAgent},{onConflict:"endpoint"});
+   if(saveErr)throw saveErr;
+   localStorage.setItem("fsp_lead_alerts","on");startLeadAlerts();
+   const test=await supabaseClient.functions.invoke("push-subscribe",{body:{action:"test"}});
+   alert(test.data?.sent>0?"Mobile New Lead notifications enabled. Test notification sent.":"Mobile notifications enabled.");
+ }catch(e){console.error(e);alert("Unable to enable push notifications. Please try again.");}
 }
 function startLeadAlerts(){
  if(!isMobilePWA()||!currentUser||localStorage.getItem("fsp_lead_alerts")!=="on"||Notification.permission!=="granted")return;
@@ -2171,7 +2182,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=22', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=23', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
