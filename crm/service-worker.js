@@ -1,7 +1,7 @@
 // Future Secure Providers CRM Service Worker
-const CACHE_NAME = 'fsp-crm-v22';
-const RUNTIME_CACHE = 'fsp-crm-runtime-v22';
-const APP_SHELL = ['./', './index.html', './manifest.json?v=22', './logo.jpg'];
+const CACHE_NAME = 'fsp-crm-v23';
+const RUNTIME_CACHE = 'fsp-crm-runtime-v23';
+const APP_SHELL = ['./', './index.html', './manifest.json?v=23', './logo.jpg'];
 
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
@@ -104,4 +104,15 @@ self.addEventListener('notificationclick', event => {
       return clients.openWindow ? clients.openWindow('./') : undefined;
     })
   );
+});
+
+self.addEventListener('push',event=>{
+ let data={title:'FSP CRM',body:'New lead received',url:'./'};
+ try{if(event.data)data={...data,...event.data.json()};}catch(e){}
+ event.waitUntil(self.registration.showNotification(data.title,{body:data.body,icon:'./logo.jpg',badge:'./logo.jpg',tag:'fsp-new-lead',renotify:true,data:{url:data.url}}));
+});
+self.addEventListener('notificationclick',event=>{
+ event.notification.close();
+ const target=new URL(event.notification.data?.url||'./',self.location.origin).href;
+ event.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(list=>{for(const c of list){if('focus' in c){c.navigate(target);return c.focus();}}return clients.openWindow(target);}));
 });
