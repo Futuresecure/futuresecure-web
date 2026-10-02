@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=28">
+<link rel="manifest" href="./manifest.json?v=29">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -2078,7 +2078,7 @@ async function loadWhatsAppInbox(){
 async function openWhatsAppConversation(waId){
  currentWhatsAppWaId=waId;whatsappSeenAt[waId]=new Date().toISOString();
  const selectedContact=whatsappContactsCache.find(v=>v.wa_id===waId);
- if(Number(selectedContact?.unread_count||0)>0){selectedContact.unread_count=0;supabaseClient.from("whatsapp_contacts").update({unread_count:0}).eq("wa_id",waId).then(()=>{});loadWhatsAppInbox();}
+ if(Number(selectedContact?.unread_count||0)>0){selectedContact.unread_count=0;const readNow=new Date().toISOString();selectedContact.last_read_at=readNow;await supabaseClient.from("whatsapp_contacts").update({unread_count:0,last_read_at:readNow}).eq("wa_id",waId);}
 
  const x=whatsappContactsCache.find(v=>v.wa_id===waId);document.getElementById("waLayout").classList.add("chat-open");const composer=document.getElementById("waComposer");if(composer)composer.style.display="flex";
  document.getElementById("waChatHead").innerHTML='<div style="display:flex;gap:10px;align-items:center"><button class="btn-secondary" id="waBackBtn" onclick="closeWhatsAppConversation()">←</button><div><strong>'+escapeHtml(x?.profile_name||formatWhatsAppPhone(waId))+'</strong><div class="wa-contact-meta">'+escapeHtml(formatWhatsAppPhone(waId))+'</div></div></div>';
@@ -2121,16 +2121,24 @@ async function sendWhatsAppConversationAttachment(input){
 }
 async function sendWhatsAppReply(){
  if(!currentWhatsAppWaId)return;
- const input=document.getElementById("waReplyText"),btn=document.getElementById("waSendBtn"),status=document.getElementById("waSendStatus");
+ const input=document.getElementById("waReplyText"),btn=document.getElementById("waSendBtn"),status=document.getElementById("waSendStatus"),box=document.getElementById("waMessages");
  const message=input.value.trim();if(!message)return;
- btn.disabled=true;btn.textContent="Sending...";status.textContent="";
+ const waId=currentWhatsAppWaId,clientId="pending-"+Date.now();
+ input.value="";status.textContent="";
+ const pending=document.createElement("div");pending.className="wa-bubble outbound";pending.dataset.clientId=clientId;
+ pending.innerHTML=escapeHtml(message)+'<span class="wa-time">Sending…</span>';box.appendChild(pending);box.scrollTop=box.scrollHeight;
+ btn.disabled=true;
  try{
-  const {data,error}=await supabaseClient.functions.invoke("whatsapp-send",{body:{wa_id:currentWhatsAppWaId,message}});
+  const {data,error}=await supabaseClient.functions.invoke("whatsapp-send",{body:{wa_id:waId,message}});
   if(error)throw error;if(!data?.ok)throw new Error(data?.error||"Send failed");
-  input.value="";status.textContent="Sent";await openWhatsAppConversation(currentWhatsAppWaId);await loadWhatsAppInbox();
- }catch(e){console.error(e);status.textContent="Unable to send. Please try again."}
- finally{btn.disabled=false;btn.textContent="Send"}
+  const t=pending.querySelector(".wa-time");if(t)t.textContent="✓ Sent";
+  setTimeout(()=>{if(currentWhatsAppWaId===waId)openWhatsAppConversation(waId);loadWhatsAppInbox();},500);
+ }catch(e){
+  console.error(e);const t=pending.querySelector(".wa-time");if(t)t.textContent="⚠ Failed";
+  status.textContent="Message failed. Your text has been restored.";input.value=message;
+ }finally{btn.disabled=false;btn.textContent="Send";input.focus()}
 }
+
 startWhatsAppAutoRefresh();
 
 const FSP_WA_TEMPLATES=[
@@ -2207,7 +2215,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=28', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=29', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
