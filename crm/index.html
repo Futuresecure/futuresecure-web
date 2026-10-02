@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=21">
+<link rel="manifest" href="./manifest.json?v=22">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -95,7 +95,7 @@ button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer}.btn-primary{
 <div class="nav-item" data-page="waTemplates" onclick="showPage('waTemplates',this);loadWhatsAppTemplates()">📝 WhatsApp Templates</div>
 <div class="nav-item" data-page="reports" onclick="showPage('reports',this);loadLeads()">📊 Reports</div>
 <div class="nav-item" data-page="pipeline" onclick="showPage('pipeline',this);loadPipeline()">🎯 Pipeline</div>
-<div class="sidebar-bottom"><div class="nav-item" onclick="enableLeadAlerts()">🔔 Enable Lead Alerts</div><div class="nav-item" data-page="settings" onclick="showPage('settings',this)">⚙️ Settings</div></div>
+<div class="sidebar-bottom"><div class="nav-item" id="leadAlertsNav" onclick="enableLeadAlerts()">🔔 Enable Lead Alerts</div><div class="nav-item" data-page="settings" onclick="showPage('settings',this)">⚙️ Settings</div></div>
 </aside>
 <div class="sidebar-overlay" onclick="closeSidebar()"></div>
 
@@ -321,14 +321,16 @@ let unseenLeadCount=Number(localStorage.getItem("fsp_unseen_leads")||0);
 async function updateLeadAppBadge(){
  try{if("setAppBadge" in navigator){if(unseenLeadCount>0)await navigator.setAppBadge(unseenLeadCount);else if("clearAppBadge" in navigator)await navigator.clearAppBadge();}}catch(e){}
 }
+function isMobilePWA(){return window.matchMedia("(display-mode: standalone)").matches && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);}
 async function enableLeadAlerts(){
- if(!("Notification" in window)){alert("Notifications are not supported on this browser.");return;}
+ if(!isMobilePWA()){alert("Lead notifications are enabled only in the installed mobile PWA.");return;}
+ if(!("Notification" in window)){alert("Notifications are not supported on this device.");return;}
  const permission=await Notification.requestPermission();
  localStorage.setItem("fsp_lead_alerts",permission==="granted"?"on":"off");
  if(permission==="granted"){startLeadAlerts();alert("New Lead alerts enabled.");}else alert("Notification permission was not enabled.");
 }
 function startLeadAlerts(){
- if(!currentUser||localStorage.getItem("fsp_lead_alerts")!=="on"||Notification.permission!=="granted")return;
+ if(!isMobilePWA()||!currentUser||localStorage.getItem("fsp_lead_alerts")!=="on"||Notification.permission!=="granted")return;
  if(leadAlertsChannel)supabaseClient.removeChannel(leadAlertsChannel);
  leadAlertsChannel=supabaseClient.channel("fsp-new-lead-alerts").on("postgres_changes",{event:"INSERT",schema:"public",table:"leads"},payload=>{
    const lead=payload.new||{};unseenLeadCount++;localStorage.setItem("fsp_unseen_leads",String(unseenLeadCount));updateLeadAppBadge();
@@ -1155,6 +1157,7 @@ async function deleteTask(id){
   await loadTasks();
 }
 document.addEventListener("DOMContentLoaded", () => {
+    const leadAlertNav=document.getElementById("leadAlertsNav");if(leadAlertNav&&!isMobilePWA())leadAlertNav.style.display="none";
     initializeAuth();
     initializeAuthStateListener();
     document.getElementById("loginForm").addEventListener("submit", handleLoginSubmit);
@@ -2168,7 +2171,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=21', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=22', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
