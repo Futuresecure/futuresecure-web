@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=29">
+<link rel="manifest" href="./manifest.json?v=30">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -1644,6 +1644,7 @@ let currentAppointments=[];
 let currentFollowups=[];
 let currentCalendarMonth=new Date();
 let currentEditingAppointmentId=null;
+let originalEditingAppointment=null;
 
 async function loadCalendar(){
   if(!currentUser){console.warn("No authenticated user");return;}
@@ -1836,6 +1837,7 @@ document.getElementById("appointmentModal").classList.add("show");
 function closeAppointmentModal(){
 document.getElementById("appointmentModal").classList.remove("show");
 currentEditingAppointmentId=null;
+originalEditingAppointment=null;
 }
 
 function openDateScheduleModal(dateStr){
@@ -1966,6 +1968,7 @@ document.getElementById("apptFormMobile").value=escapeHtml(selectedLead.mobile_n
 
 function openAppointmentFormModal(leadId,appointmentId){
 const appt=appointmentId?currentAppointments.find(a=>a.id===appointmentId):null;
+originalEditingAppointment=appt?{...appt}:null;
 const title=appt?"Edit Appointment":"New Appointment";
 const isEditMode=!!appt;
 const selectedLeadId=isEditMode?appt.lead_id:leadId;
@@ -2040,11 +2043,33 @@ if(!customerName||!mobile||!date||!time||!status){alert("Please fill all require
 const formData={lead_id:leadId,customer_name:customerName,mobile_number:mobile,appointment_date:date,appointment_time:time,status:status,notes:notes||null};
 
 if(currentEditingAppointmentId){
-await updateAppointment(currentEditingAppointmentId,formData);
+ const oldAppt=originalEditingAppointment?{...originalEditingAppointment}:null;
+ const changed=!!oldAppt&&(String(oldAppt.appointment_date||"")!==date||String(oldAppt.appointment_time||"")!==time);
+ const id=currentEditingAppointmentId;
+ await updateAppointment(id,formData);
+ if(changed&&confirm("Appointment date/time changed. Send WhatsApp reschedule message now?")){
+   await sendAppointmentRescheduleWhatsApp(formData);
+ }
 }else{
-await saveAppointment(formData);
+ await saveAppointment(formData);
 }
 closeAppointmentFormModal();
+}
+
+async function sendAppointmentRescheduleWhatsApp(formData){
+ const waId=normalizeWhatsAppNumber(formData.mobile_number);
+ if(!/^91[6-9]\d{9}$/.test(waId)){alert("Appointment saved, but customer mobile number is invalid for WhatsApp.");return;}
+ const dateParts=String(formData.appointment_date).split("-");
+ const displayDate=dateParts.length===3?dateParts[2]+"-"+dateParts[1]+"-"+dateParts[0]:formData.appointment_date;
+ let displayTime=formData.appointment_time;
+ try{const [hh,mm]=String(displayTime).split(":").map(Number);displayTime=String((hh%12)||12).padStart(2,"0")+":"+String(mm).padStart(2,"0")+" "+(hh>=12?"PM":"AM")}catch(e){}
+ const status=document.getElementById("appointmentFormTitle");const oldTitle=status?.textContent||"Edit Appointment";if(status)status.textContent="Sending WhatsApp...";
+ try{
+  const {data,error}=await supabaseClient.functions.invoke("whatsapp-send",{body:{wa_id:waId,type:"template",template_name:"fsp_appointment_rescheduled",language:"ta",parameters:[formData.customer_name,displayDate,displayTime]}});
+  if(error)throw error;if(!data?.ok)throw new Error(data?.error||"Send failed");
+  showMessage("Appointment updated & reschedule WhatsApp sent!","success");
+ }catch(e){console.error(e);alert("Appointment updated, but reschedule WhatsApp could not be sent: "+(e?.message||"Send failed"))}
+ finally{if(status)status.textContent=oldTitle}
 }
 
 async function deleteAppointmentFromForm(){
@@ -2215,7 +2240,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=29', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=30', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
