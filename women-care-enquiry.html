@@ -590,6 +590,32 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important
 }
 .member-card .age-input::placeholder{color:#8c7481!important;opacity:1!important}
 </style>
+
+<style id="women-care-medical-fix">
+#medicalExtra{
+  margin-top:12px!important;
+  display:none;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+}
+#medicalExtra label{
+  min-height:44px!important;
+  margin:0!important;
+  padding:10px 12px!important;
+  border:1px solid #efc7da!important;
+  border-radius:8px!important;
+  background:#fff!important;
+  color:#5d2340!important;
+  font-size:12px!important;
+  font-weight:600!important;
+}
+#medicalExtra label input{
+  accent-color:#c83275!important;
+}
+@media(max-width:640px){
+  #medicalExtra{grid-template-columns:1fr!important}
+}
+</style>
 </head>
 
 <body>
