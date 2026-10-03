@@ -1,7 +1,7 @@
 // Future Secure Providers CRM Service Worker
-const CACHE_NAME = 'fsp-crm-v38';
-const RUNTIME_CACHE = 'fsp-crm-runtime-v38';
-const APP_SHELL = ['./', './index.html', './manifest.json?v=38', './logo.jpg'];
+const CACHE_NAME = 'fsp-crm-v39';
+const RUNTIME_CACHE = 'fsp-crm-runtime-v39';
+const APP_SHELL = ['./', './index.html', './manifest.json?v=39', '../pwa-icon.svg'];
 
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') self.skipWaiting();
@@ -87,8 +87,8 @@ self.addEventListener('push', event => {
   try { data = event.data.json(); } catch (_) { data = { body: event.data.text() }; }
   event.waitUntil(self.registration.showNotification(data.title || 'Future Secure Providers CRM', {
     body: data.body || 'New notification',
-    icon: './logo.jpg',
-    badge: './logo.jpg',
+    icon: '../pwa-icon.svg',
+    badge: '../pwa-icon.svg',
     tag: data.tag || 'fsp-crm-notification',
     requireInteraction: !!data.requireInteraction
   }));
@@ -109,7 +109,7 @@ self.addEventListener('notificationclick', event => {
 self.addEventListener('push',event=>{
  let data={title:'FSP CRM',body:'New lead received',url:'./'};
  try{if(event.data)data={...data,...event.data.json()};}catch(e){}
- event.waitUntil(self.registration.showNotification(data.title,{body:data.body,icon:'./logo.jpg',badge:'./logo.jpg',tag:'fsp-new-lead',renotify:true,data:{url:data.url}}));
+ event.waitUntil(self.registration.showNotification(data.title,{body:data.body,icon:'../pwa-icon.svg',badge:'../pwa-icon.svg',tag:'fsp-new-lead',renotify:true,data:{url:data.url}}));
 });
 self.addEventListener('notificationclick',event=>{
  event.notification.close();
