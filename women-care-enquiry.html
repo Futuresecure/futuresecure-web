@@ -579,6 +579,17 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important
  .member-grid,.details-grid,.callback-grid{grid-template-columns:1fr!important}
 }
 </style>
+
+<style id="women-care-age-fix">
+.member-card .age-row[hidden]{display:none!important}
+.member-card .age-row:not([hidden]){display:flex!important;align-items:center!important;margin-top:8px!important}
+.member-card .age-input{
+ display:block!important;width:100%!important;max-width:none!important;height:38px!important;
+ padding:7px 10px!important;border:1px solid #e8b4cd!important;border-radius:7px!important;
+ background:#fff!important;color:#482238!important;opacity:1!important;
+}
+.member-card .age-input::placeholder{color:#8c7481!important;opacity:1!important}
+</style>
 </head>
 
 <body>
