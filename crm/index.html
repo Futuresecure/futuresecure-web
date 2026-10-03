@@ -13,19 +13,16 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=33">
+<link rel="manifest" href="./manifest.json?v=34">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
 :root{--sidebar:#172238;--primary:#247d78;--primary-dark:#1c6763;--bg:#f4f6f9;--card:#fff;--text:#273142;--muted:#6b7280;--border:#e5e7eb;--danger:#dc2626}
 body{background:var(--bg);color:var(--text)}
-
 .app{display:flex;min-height:100vh}
 .sidebar{width:220px;background:var(--sidebar);color:#fff;padding:24px 10px;display:flex;flex-direction:column;min-height:100vh}
-.brand{display:flex;flex-direction:column;align-items:center;text-align:center;padding:6px 10px 22px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:18px}
-.brand-logo{width:104px;height:104px;object-fit:contain;display:block;margin:0 auto 10px;border-radius:8px}
-.brand-name{font-size:18px;font-weight:700;line-height:1.25;color:#fff;white-space:nowrap}
-.brand span{display:block;font-size:10px;color:#73c7bd;letter-spacing:1.5px;margin-top:7px;font-weight:600}
+.brand{font-size:20px;font-weight:700;padding:10px 14px 26px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:18px;line-height:1.3}
+.brand span{display:block;font-size:11px;color:#73c7bd;letter-spacing:1px;margin-top:7px;font-weight:500}
 .menu-label{font-size:10px;letter-spacing:1px;color:#7d8aa1;padding:10px 14px}
 .nav-item{padding:13px 14px;margin-bottom:5px;border-radius:8px;cursor:pointer;color:#d2d8e2;font-size:15px}
 .nav-item:hover,.nav-item.active{background:var(--primary);color:#fff}
@@ -66,62 +63,26 @@ button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer}.btn-primary{
 
 /* FSP PROFESSIONAL MULTI-INSURANCE ENHANCEMENTS */
 .insurance-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:700;background:#eef6ff;color:#1d4ed8;white-space:nowrap}
-.insurance-badge.health{background:#ecfdf5;color:#047857}.insurance-badge.women{background:#fff0f6;color:#be185d}.insurance-badge.life{background:#f5f3ff;color:#6d28d9}.insurance-badge.vehicle{background:#fff7ed;color:#c2410c}.insurance-badge.other{background:#f3f4f6;color:#374151}
+.insurance-badge.health{background:#ecfdf5;color:#047857}.insurance-badge.life{background:#f5f3ff;color:#6d28d9}.insurance-badge.vehicle{background:#fff7ed;color:#c2410c}.insurance-badge.other{background:#f3f4f6;color:#374151}
 .kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.kpi-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px}.kpi-card .kpi-label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:8px}.kpi-card .kpi-value{font-size:24px;font-weight:800}.kpi-card .kpi-note{font-size:11px;color:var(--muted);margin-top:5px}
-.business-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.business-card{border:1px solid var(--border);border-radius:12px;padding:16px;background:#fff}.business-card h3{font-size:14px;margin-bottom:7px}.business-card strong{font-size:24px}.business-card p{font-size:12px;color:var(--muted);margin-top:4px}
+.business-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.business-card{border:1px solid var(--border);border-radius:12px;padding:16px;background:#fff}.business-card h3{font-size:14px;margin-bottom:7px}.business-card strong{font-size:24px}.business-card p{font-size:12px;color:var(--muted);margin-top:4px}
 .form-section-title{grid-column:1/-1;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;border-bottom:1px solid var(--border);padding-bottom:7px;margin-top:4px}
 @media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.business-summary{grid-template-columns:1fr}}
 @media(max-width:560px){.kpi-grid{grid-template-columns:1fr}}
 
 /* WHATSAPP INBOX */
 .wa-inbox-card{overflow:hidden}
-.wa-layout{display:grid;grid-template-columns:320px minmax(0,1fr);height:clamp(520px,calc(100dvh - 260px),720px);border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff;min-width:0}
-.wa-list{min-width:0;border-right:1px solid var(--border);overflow-y:auto;background:#f8fafc}
-.wa-list-head{padding:16px;border-bottom:1px solid var(--border);background:#fff}
-.wa-contact{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}
-.wa-contact:hover,.wa-contact.active{background:#eaf6f4}
-.wa-contact{position:relative}.wa-contact.unread{background:#fff;font-weight:700}.wa-contact.unread .wa-contact-meta{font-weight:600;color:#374151}.wa-unread-badge{position:absolute;right:14px;top:50%;transform:translateY(-50%);min-width:22px;height:22px;padding:0 6px;border-radius:999px;background:#25d366;color:#fff;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center}
-.wa-contact-name{font-weight:700;margin-bottom:4px}.wa-contact-meta{font-size:12px;color:var(--muted)}
-.wa-chat{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;min-width:0;min-height:0;height:100%;overflow:hidden}
-.wa-chat-head{padding:16px 18px;border-bottom:1px solid var(--border);min-width:0}
-.wa-messages{min-width:0;min-height:0;overflow-y:auto;overflow-x:hidden;padding:20px;background:#eef2f3}
-.wa-bubble{width:fit-content;max-width:78%;padding:10px 12px;border-radius:10px;margin-bottom:10px;background:#fff;white-space:pre-wrap;word-break:normal;overflow-wrap:anywhere}
-.wa-bubble.outbound{margin-left:auto;background:#d9fdd3}
-.wa-time{display:block;text-align:right;font-size:10px;color:var(--muted);margin-top:5px}
-.wa-placeholder{margin:auto;color:var(--muted);text-align:center;padding:30px}
-.wa-composer{display:flex;align-items:center;gap:8px;padding:10px;border-top:1px solid var(--border);background:#fff;min-width:0}
-.wa-composer textarea{flex:1 1 0;width:0;min-width:0;height:44px;min-height:44px;max-height:88px;resize:none;overflow-y:auto}
-.wa-composer button{flex:0 0 auto;min-width:64px}
-.wa-send-status{font-size:12px;background:#fff;color:var(--muted)}
-.wa-send-status:empty{display:none}.wa-send-status:not(:empty){padding:6px 12px 10px}
-@media(max-width:768px){
- #whatsappPage{width:100%;min-width:0}
- #whatsappPage>.wa-inbox-card{width:100%;min-width:0;padding:14px;overflow:hidden}
- #whatsappPage .wa-layout{display:block;width:100%;height:calc(100dvh - 300px);min-height:460px;max-height:none}
- #whatsappPage .wa-list{display:block;width:100%;height:100%;border-right:0}
- #whatsappPage .wa-chat{display:none;width:100%;height:100%;min-width:0}
- #whatsappPage .wa-layout.chat-open .wa-list{display:none}
- #whatsappPage .wa-layout.chat-open .wa-chat{display:grid}
- #whatsappPage .wa-messages{width:100%;min-width:0;padding:12px}
- #whatsappPage .wa-bubble{max-width:84%}
- #whatsappPage .wa-composer{width:100%;min-width:0;padding:8px 6px;gap:5px}
- #whatsappPage .wa-composer textarea{width:0;min-width:0}
- #whatsappPage .wa-composer button{min-width:48px;padding:9px 7px}
-}
+.wa-layout{display:grid;grid-template-columns:320px minmax(0,1fr);height:clamp(520px,calc(100dvh - 260px),720px);min-height:0;max-height:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff}.wa-list{border-right:1px solid var(--border);overflow-y:auto;background:#f8fafc}.wa-list-head{padding:16px;border-bottom:1px solid var(--border);background:#fff}.wa-contact{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}.wa-contact:hover,.wa-contact.active{background:#eaf6f4}.wa-contact-name{font-weight:700;margin-bottom:4px}.wa-contact-meta{font-size:12px;color:var(--muted)}.wa-chat{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;min-width:0;min-height:0;height:100%;overflow:hidden}.wa-chat-head{padding:16px 18px;border-bottom:1px solid var(--border);min-width:0}.wa-messages{min-height:0;height:100%;overflow-y:scroll;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:20px;background:#eef2f3}.wa-bubble{max-width:78%;padding:10px 12px;border-radius:10px;margin-bottom:10px;background:#fff;white-space:pre-wrap;overflow-wrap:anywhere}.wa-bubble.outbound{margin-left:auto;background:#d9fdd3}.wa-time{display:block;text-align:right;font-size:10px;color:var(--muted);margin-top:5px}.wa-placeholder{margin:auto;color:var(--muted);text-align:center;padding:30px}@media(max-width:768px){.wa-layout{grid-template-columns:1fr;height:calc(100dvh - 170px);min-height:420px;max-height:none}.wa-list{border-right:0}.wa-chat{display:none}.wa-layout.chat-open .wa-list{display:none}.wa-layout.chat-open .wa-chat{display:flex}}
+.wa-composer{display:flex;flex:0 0 auto;gap:10px;padding:12px;border-top:1px solid var(--border);background:#fff;position:relative;z-index:2}.wa-composer textarea{flex:1 1 auto;min-width:0;height:44px;min-height:44px;max-height:88px;resize:none;overflow-y:auto}.wa-composer button{min-width:86px}.wa-send-status{font-size:12px;flex:0 0 auto;background:#fff;color:var(--muted);position:relative;z-index:2}.wa-send-status:empty{display:none}.wa-send-status:not(:empty){padding:6px 12px 10px}@media(max-width:768px){.wa-composer{padding:10px;gap:8px}.wa-composer button{min-width:70px}}
 </style>
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.getRegistration('./').then(r=>{if(r)r.update();}).catch(()=>{}));
-}
-</script>
 </head>
 <body>
 <div class="app">
 <aside class="sidebar">
-<div class="brand"><img class="brand-logo" src="./logo.jpg" alt="Future Secure Providers"><div class="brand-name">Future Secure<br>Providers</div><span>CRM SYSTEM</span></div>
+<div class="brand"><img src="./logo.jpg" alt="Future Secure Providers" style="width:100%;max-width:80px;height:auto;margin-bottom:8px;border-radius:6px;">Future Secure<br>Providers<span>CRM SYSTEM</span></div>
 <div class="menu-label">MAIN MENU</div>
 <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard',this)">📊 Dashboard</div>
-<div class="nav-item" data-page="leads" onclick="showPage('leads',this);clearLeadBadge();loadLeads()">👥 Leads</div>
+<div class="nav-item" data-page="leads" onclick="showPage('leads',this);loadLeads()">👥 Leads</div>
 <div class="nav-item" data-page="addLead" onclick="openNewLead()">➕ Add New Lead</div>
 <div class="menu-label">MANAGEMENT</div>
 <div class="nav-item" data-page="followups" onclick="showPage('followups',this);loadFollowups()">📞 Follow-ups</div>
@@ -131,7 +92,7 @@ if('serviceWorker' in navigator){
 <div class="nav-item" data-page="waTemplates" onclick="showPage('waTemplates',this);loadWhatsAppTemplates()">📝 WhatsApp Templates</div>
 <div class="nav-item" data-page="reports" onclick="showPage('reports',this);loadLeads()">📊 Reports</div>
 <div class="nav-item" data-page="pipeline" onclick="showPage('pipeline',this);loadPipeline()">🎯 Pipeline</div>
-<div class="sidebar-bottom"><div class="nav-item" id="leadAlertsNav" onclick="enableLeadAlerts()">🔔 Enable Lead Alerts</div><div class="nav-item" data-page="settings" onclick="showPage('settings',this)">⚙️ Settings</div></div>
+<div class="sidebar-bottom"><div class="nav-item" data-page="settings" onclick="showPage('settings',this)">⚙️ Settings</div></div>
 </aside>
 <div class="sidebar-overlay" onclick="closeSidebar()"></div>
 
@@ -211,7 +172,7 @@ if('serviceWorker' in navigator){
 <div class="stat-card"><h3>Follow-ups</h3><div class="number" id="followupCount">0</div></div>
 <div class="stat-card"><h3>Converted</h3><div class="number" id="convertedCount">0</div></div>
 </div>
-<div class="card"><div class="card-header"><h2>Insurance Business Overview</h2><span class="muted">Lead distribution by insurance category</span></div><div class="business-summary" id="insuranceBusinessSummary"></div></div>
+<div class="card"><div class="card-header"><h2>Insurance Business Overview</h2><span class="muted">Lead distribution by insurance category</span></div><div class="business-summary" id="insuranceBusinessSummary"><div class="business-card"><h3><span class="insurance-badge health">🏥 Health Insurance</span></h3><strong>0</strong><p>Leads · 0 Converted</p></div><div class="business-card"><h3><span class="insurance-badge women">🌸 Women Care Insurance</span></h3><strong>0</strong><p>Leads · 0 Converted</p></div><div class="business-card"><h3><span class="insurance-badge super">➕ Super Top-Up Insurance</span></h3><strong>0</strong><p>Leads · 0 Converted</p></div><div class="business-card"><h3><span class="insurance-badge life">🛡️ Life Insurance</span></h3><strong>0</strong><p>Leads · 0 Converted</p></div><div class="business-card"><h3><span class="insurance-badge vehicle">🚗 Vehicle Insurance</span></h3><strong>0</strong><p>Leads · 0 Converted</p></div></div></div>
 
 <div class="card"><div class="card-header"><h2>Recent Leads</h2><button class="btn-secondary" onclick="showPage('leads',document.querySelector('[data-page=leads]'));loadLeads()">View All</button></div><div class="table-wrapper"><table><thead><tr><th>Name</th><th>Mobile</th><th>Insurance</th><th>City</th><th>Status</th></tr></thead><tbody id="recentLeads"></tbody></table></div></div>
 </section>
@@ -223,7 +184,7 @@ if('serviceWorker' in navigator){
 <div class="form-group"><label>Mobile Number *</label><input id="leadPhone" required placeholder="Mobile number"></div>
 <div class="form-group"><label>City</label><input id="leadCity" placeholder="City"></div>
 <div class="form-section-title">Insurance & Lead Details</div>
-<div class="form-group"><label>Insurance Type *</label><select id="leadInsuranceType" required><option value="">Select Insurance Type</option><option>Health Insurance</option><option>Women Care Insurance</option><option>Life Insurance</option><option>Vehicle Insurance</option><option>Other Insurance</option></select></div>
+<div class="form-group"><label>Insurance Type *</label><select id="leadInsuranceType" required><option value="">Select Insurance Type</option><option>Health Insurance</option><option>Women Care Insurance</option><option>Super Top-Up Insurance</option><option>Life Insurance</option><option>Vehicle Insurance</option><option>Other Insurance</option></select></div>
 <div class="form-group"><label>Lead Source</label><select id="leadSource"><option>Manual</option><option>Website</option><option>Meta Ads</option><option>WhatsApp</option><option>Referral</option><option>Other</option></select></div>
 <div class="form-group"><label>Status</label><select id="leadStatus"><option>New</option><option>Contacted</option><option>Follow-up</option><option>Interested</option><option>Converted</option><option>Not Interested</option></select></div>
 <div class="form-group"><label>Next Follow-up</label><input type="datetime-local" id="leadFollowUp"></div>
@@ -231,7 +192,7 @@ if('serviceWorker' in navigator){
 </div><button class="btn-primary save-button" id="saveLeadButton">Save Lead</button><div id="formMessage" class="message"></div></form>
 </div></section>
 
-<section id="leadsPage" class="page hidden"><div class="card"><div class="card-header"><h2>Advanced Filters</h2><button class="btn-secondary" type="button" onclick="clearLeadFilters()">Clear Filters</button></div><div class="filter-grid"><div><label>Insurance Type</label><select id="filterInsuranceType" onchange="applyLeadFilters()"><option value="">All Insurance</option><option>Health Insurance</option><option>Women Care Insurance</option><option>Life Insurance</option><option>Vehicle Insurance</option><option>Other Insurance</option><option>Not Specified</option></select></div><div><label>Status</label><select id="filterStatus" onchange="applyLeadFilters()"><option value="">All Status</option><option>New</option><option>Contacted</option><option>Follow-up</option><option>Interested</option><option>Converted</option><option>Not Interested</option></select></div><div><label>City</label><select id="filterCity" onchange="applyLeadFilters()"><option value="">All Cities</option></select></div><div><label>Lead Source</label><select id="filterSource" onchange="applyLeadFilters()"><option value="">All Sources</option></select></div><div><label>Follow-up Date</label><input type="date" id="filterFollowupDate" onchange="applyLeadFilters()"></div></div><div class="filter-result">Showing <strong id="filteredLeadCount">0</strong> leads</div></div><div class="card"><div class="card-header"><h2>All Leads</h2><div class="actions"><input class="search-input" id="leadSearch" placeholder="Search name or mobile..." oninput="searchLeads(this.value)"><button class="btn-primary" onclick="openNewLead()">+ Add New Lead</button></div></div><div class="table-wrapper"><table><thead><tr><th>Name</th><th>Mobile</th><th>Insurance</th><th>City</th><th>Source</th><th>Status</th><th>Follow-up</th><th>Actions</th></tr></thead><tbody id="leadsTable"></tbody></table></div></div></section>
+<section id="leadsPage" class="page hidden"><div class="card"><div class="card-header"><h2>Advanced Filters</h2><button class="btn-secondary" type="button" onclick="clearLeadFilters()">Clear Filters</button></div><div class="filter-grid"><div><label>Insurance Type</label><select id="filterInsuranceType" onchange="applyLeadFilters()"><option value="">All Insurance</option><option>Health Insurance</option><option>Women Care Insurance</option><option>Super Top-Up Insurance</option><option>Life Insurance</option><option>Vehicle Insurance</option><option>Other Insurance</option><option>Not Specified</option></select></div><div><label>Status</label><select id="filterStatus" onchange="applyLeadFilters()"><option value="">All Status</option><option>New</option><option>Contacted</option><option>Follow-up</option><option>Interested</option><option>Converted</option><option>Not Interested</option></select></div><div><label>City</label><select id="filterCity" onchange="applyLeadFilters()"><option value="">All Cities</option></select></div><div><label>Lead Source</label><select id="filterSource" onchange="applyLeadFilters()"><option value="">All Sources</option></select></div><div><label>Follow-up Date</label><input type="date" id="filterFollowupDate" onchange="applyLeadFilters()"></div></div><div class="filter-result">Showing <strong id="filteredLeadCount">0</strong> leads</div></div><div class="card"><div class="card-header"><h2>All Leads</h2><div class="actions"><input class="search-input" id="leadSearch" placeholder="Search name or mobile..." oninput="searchLeads(this.value)"><button class="btn-primary" onclick="openNewLead()">+ Add New Lead</button></div></div><div class="table-wrapper"><table><thead><tr><th>Name</th><th>Mobile</th><th>Insurance</th><th>City</th><th>Source</th><th>Status</th><th>Follow-up</th><th>Actions</th></tr></thead><tbody id="leadsTable"></tbody></table></div></div></section>
 
 <section id="followupsPage" class="page hidden"><div class="stats"><div class="stat-card"><h3>Today</h3><div class="number" id="todayFollowupCount">0</div></div><div class="stat-card"><h3>Tomorrow</h3><div class="number" id="tomorrowFollowupCount">0</div></div><div class="stat-card"><h3>Overdue</h3><div class="number" id="overdueFollowupCount">0</div></div></div><div class="card"><div class="card-header"><h2>Follow-ups</h2><button class="btn-primary" onclick="loadFollowups()">Refresh</button></div><div class="table-wrapper"><table><thead><tr><th>Type</th><th>Name</th><th>Mobile</th><th>Next Follow-up</th><th>Status</th><th>Action</th></tr></thead><tbody id="followupsTable"></tbody></table></div></div></section>
 
@@ -352,34 +313,8 @@ const SUPABASE_URL="https://cjwxirpwzluynymwjzxl.supabase.co";
 const SUPABASE_KEY="sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz";
 const supabaseClient=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let currentUser=null;
-let leadAlertsChannel=null;
-let unseenLeadCount=Number(localStorage.getItem("fsp_unseen_leads")||0);
-async function updateLeadAppBadge(){
- try{if("setAppBadge" in navigator){if(unseenLeadCount>0)await navigator.setAppBadge(unseenLeadCount);else if("clearAppBadge" in navigator)await navigator.clearAppBadge();}}catch(e){}
-}
-function isMobilePWA(){return window.matchMedia("(display-mode: standalone)").matches && /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);}
-function urlBase64ToUint8Array(v){const p="=".repeat((4-v.length%4)%4),b=(v+p).replace(/-/g,"+").replace(/_/g,"/"),raw=atob(b);return Uint8Array.from([...raw].map(c=>c.charCodeAt(0)));}
-async function enableLeadAlerts(){
- if(!isMobilePWA()){alert("Lead notifications are enabled only in the installed mobile PWA.");return;}
- if(!("Notification" in window)||!("serviceWorker" in navigator)||!("PushManager" in window)){alert("Push notifications are not supported on this device.");return;}
- const permission=await Notification.requestPermission();if(permission!=="granted"){localStorage.setItem("fsp_lead_alerts","off");alert("Notification permission was not enabled.");return;}
- try{
-   const reg=await navigator.serviceWorker.ready;
-   const {data,error}=await supabaseClient.functions.invoke("push-subscribe",{body:{action:"public_key"}});if(error||!data?.publicKey)throw error||new Error("Push key unavailable");
-   let sub=await reg.pushManager.getSubscription();
-   if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:urlBase64ToUint8Array(data.publicKey)});
-   const j=sub.toJSON(),{data:{user}}=await supabaseClient.auth.getUser();
-   const {error:saveErr}=await supabaseClient.from("push_subscriptions").upsert({user_id:user.id,endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth,user_agent:navigator.userAgent},{onConflict:"endpoint"});
-   if(saveErr)throw saveErr;
-   localStorage.setItem("fsp_lead_alerts","on");startLeadAlerts();
-   const test=await supabaseClient.functions.invoke("push-subscribe",{body:{action:"test"}});
-   alert(test.data?.sent>0?"Mobile New Lead notifications enabled. Test notification sent.":"Mobile notifications enabled.");
- }catch(e){console.error(e);alert("Unable to enable push notifications. Please try again.");}
-}
-function startLeadAlerts(){updateLeadAppBadge();}
-function clearLeadBadge(){unseenLeadCount=0;localStorage.setItem("fsp_unseen_leads","0");updateLeadAppBadge();}
-async function initializeAuth(){try{const{data:{session},error}=await supabaseClient.auth.getSession();if(error)throw error;if(session){currentUser=session.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();await loadCRMData();startLeadAlerts();}else{showLoginPage();}}catch(err){console.error("Error initializing auth:",err);showLoginPage();}}
-async function initializeAuthStateListener(){supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_IN"&&session){currentUser=session.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();loadCRMData();startLeadAlerts();}else if(event==="SIGNED_OUT"){currentUser=null;clearCRMData();updateHeaderForLoggedOut();showLoginPage();}else if(event==="TOKEN_REFRESHED"){console.log("Token refreshed");}});}
+async function initializeAuth(){try{const{data:{session},error}=await supabaseClient.auth.getSession();if(error)throw error;if(session){currentUser=session.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();await loadCRMData();}else{showLoginPage();}}catch(err){console.error("Error initializing auth:",err);showLoginPage();}}
+async function initializeAuthStateListener(){supabaseClient.auth.onAuthStateChange((event,session)=>{if(event==="SIGNED_IN"&&session){currentUser=session.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();loadCRMData();}else if(event==="SIGNED_OUT"){currentUser=null;clearCRMData();updateHeaderForLoggedOut();showLoginPage();}else if(event==="TOKEN_REFRESHED"){console.log("Token refreshed");}});}
 async function handleLoginSubmit(event){event.preventDefault();const email=document.getElementById("loginEmail").value.trim();const password=document.getElementById("loginPassword").value;const submitButton=document.getElementById("loginSubmitButton");const errorDiv=document.getElementById("loginErrorMessage");submitButton.disabled=true;submitButton.textContent="Signing In...";errorDiv.classList.remove("show");try{const{data,error}=await supabaseClient.auth.signInWithPassword({email,password});if(error)throw error;currentUser=data.user;updateHeaderForAuthenticatedUser(currentUser);showCRMUI();await loadCRMData();}catch(err){console.error("Sign in error:",err);showLoginError(err.message||"Sign in failed. Please check your credentials and try again.");}finally{submitButton.disabled=false;submitButton.textContent="Sign In";}}
 function showLoginError(message){const errorDiv=document.getElementById("loginErrorMessage");errorDiv.textContent=message;errorDiv.classList.add("show");}
 async function handleLogout(){try{const{error}=await supabaseClient.auth.signOut();if(error)throw error;currentUser=null;clearCRMData();updateHeaderForLoggedOut();showLoginPage();}catch(err){console.error("Sign out error:",err);alert("Error signing out: "+err.message);}}
@@ -440,7 +375,6 @@ leads:["Leads","Manage all customer leads"],addLead:["Add New Lead","Create or u
 followups:["Follow-ups","Manage scheduled follow-ups"],tasks:["Today's Tasks","Manage your daily activities"],
 calendar:["Calendar","View and manage appointments"],
 whatsapp:["WhatsApp Inbox","View customer WhatsApp conversations"],
-waTemplates:["WhatsApp Templates","Create, preview, submit and monitor WhatsApp message templates"],
 reports:["Reports","View CRM performance reports"],pipeline:["Lead Pipeline","Track leads by sales stage"],
 leadProfile:["Lead Profile","Customer details and activity"],settings:["Settings","CRM configuration"]};
 
@@ -630,7 +564,7 @@ async function handleLeadCSVImport(event){
 }
 let allLeadsCache=[];
 function getLocalDateKey(value){if(!value)return "";const d=new Date(value);if(isNaN(d))return "";const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
-function normalizeInsuranceType(value){const v=String(value||"").trim().toLowerCase();if(!v)return "Not Specified";if(v.includes("women care")||v.includes("womens care")||v.includes("woman care")||v.includes("maternity"))return "Women Care Insurance";if(v.includes("health")||v.includes("medical"))return "Health Insurance";if(v.includes("life"))return "Life Insurance";if(v.includes("vehicle")||v.includes("motor")||v.includes("car")||v.includes("bike"))return "Vehicle Insurance";if(v.includes("other"))return "Other Insurance";return String(value).trim()||"Not Specified";}
+function normalizeInsuranceType(value){const v=String(value||"").trim().toLowerCase();if(!v)return "Not Specified";if(v.includes("super top-up")||v.includes("super topup")||v.includes("super surplus"))return "Super Top-Up Insurance";if(v.includes("women care")||v.includes("womens care")||v.includes("women-care"))return "Women Care Insurance";if(v.includes("health")||v.includes("medical"))return "Health Insurance";if(v.includes("life"))return "Life Insurance";if(v.includes("vehicle")||v.includes("motor")||v.includes("car")||v.includes("bike"))return "Vehicle Insurance";if(v.includes("other"))return "Other Insurance";return String(value).trim()||"Not Specified";}
 function getInsuranceType(lead){
   if(!lead)return "Not Specified";
   const direct=[lead.insurance_type,lead.insuranceType,lead.product,lead.policy_type,lead.policyType,lead.purpose].find(v=>String(v||"").trim());
@@ -640,14 +574,13 @@ function getInsuranceType(lead){
   if(m)return normalizeInsuranceType(m[1]);
   const p=notes.match(/(?:^|\|)\s*Product:\s*([^|\n]+)/i);
   if(p)return normalizeInsuranceType(p[1]);
-  if(/\b(women care|womens care|woman care|maternity)\b/i.test(notes))return "Women Care Insurance";
   if(/\b(health|medical|mediclaim|hospital|family floater|senior citizen)\b/i.test(notes))return "Health Insurance";
   if(/\b(life|term plan|term insurance|endowment|ulip)\b/i.test(notes))return "Life Insurance";
   if(/\b(vehicle|motor|car|bike|two wheeler|four wheeler|renewal)\b/i.test(notes))return "Vehicle Insurance";
   return "Not Specified";
 }
 function buildLeadNotes(type,notes){const clean=String(notes||"").replace(/^\[Insurance Type:[^\]]+\]\s*/i,"").trim();const normalized=normalizeInsuranceType(type);return normalized==="Not Specified"?(clean||null):(`[Insurance Type: ${normalized}]`+(clean?`\n${clean}`:""));}
-function insuranceBadge(type){const t=normalizeInsuranceType(type);const c=t.startsWith("Women Care")?"women":t.toLowerCase().split(" ")[0];const icon=t.startsWith("Women Care")?"🌸":t.startsWith("Health")?"🏥":t.startsWith("Life")?"🛡️":t.startsWith("Vehicle")?"🚗":"📋";return `<span class="insurance-badge ${c}">${icon} ${escapeHtml(t)}</span>`;}
+function insuranceBadge(type){const t=normalizeInsuranceType(type);const c=t.toLowerCase().split(" ")[0];const icon=t.startsWith("Health")?"🏥":t.startsWith("Women Care")?"🌸":t.startsWith("Super Top-Up")?"➕":t.startsWith("Life")?"🛡️":t.startsWith("Vehicle")?"🚗":"📋";return `<span class="insurance-badge ${c}">${icon} ${escapeHtml(t)}</span>`;}
 function populateLeadFilters(){const city=document.getElementById("filterCity"),source=document.getElementById("filterSource");if(!city||!source)return;const cv=city.value,sv=source.value;const cities=[...new Set(allLeadsCache.map(x=>(x.city||"").trim()).filter(Boolean))].sort();const sources=[...new Set(allLeadsCache.map(x=>(x.lead_source||"").trim()).filter(Boolean))].sort();city.innerHTML='<option value="">All Cities</option>'+cities.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join("");source.innerHTML='<option value="">All Sources</option>'+sources.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join("");city.value=cv;source.value=sv;}
 function applyLeadFilters() {
 
@@ -740,7 +673,7 @@ const {data,error}=await supabaseClient.from("leads").select("*").order("created
 if(error){leadsTable.innerHTML=`<tr><td colspan="8" class="empty">${escapeHtml(error.message)}</td></tr>`;return}
 const rows=data||[];allLeadsCache=rows;populateLeadFilters();applyLeadFilters();renderRecent(rows);updateDashboard(rows);renderReports(rows)
 }
-function updateDashboard(rows){totalLeads.textContent=rows.length;newLeads.textContent=rows.filter(x=>x.status==="New").length;followupCount.textContent=rows.filter(x=>x.next_follow_up).length;convertedCount.textContent=rows.filter(x=>x.status==="Converted").length;const box=document.getElementById("insuranceBusinessSummary");if(box){const types=["Health Insurance","Women Care Insurance","Life Insurance","Vehicle Insurance"];box.innerHTML=types.map(t=>{const n=rows.filter(x=>getInsuranceType(x)===t).length;const c=rows.filter(x=>getInsuranceType(x)===t&&x.status==="Converted").length;return `<div class="business-card"><h3>${insuranceBadge(t)}</h3><strong>${n}</strong><p>Leads · ${c} Converted</p></div>`;}).join("")}}
+function updateDashboard(rows){totalLeads.textContent=rows.length;newLeads.textContent=rows.filter(x=>x.status==="New").length;followupCount.textContent=rows.filter(x=>x.next_follow_up).length;convertedCount.textContent=rows.filter(x=>x.status==="Converted").length;const box=document.getElementById("insuranceBusinessSummary");if(box){const types=["Health Insurance","Women Care Insurance","Super Top-Up Insurance","Life Insurance","Vehicle Insurance"];box.innerHTML=types.map(t=>{const n=rows.filter(x=>getInsuranceType(x)===t).length;const c=rows.filter(x=>getInsuranceType(x)===t&&x.status==="Converted").length;return `<div class="business-card"><h3>${insuranceBadge(t)}</h3><strong>${n}</strong><p>Leads · ${c} Converted</p></div>`;}).join("")}}
 function renderRecent(rows){recentLeads.innerHTML=rows.slice(0,5).map(x=>`<tr onclick="viewLead(${Number(x.id)})" style="cursor:pointer"><td>${escapeHtml(x.full_name)}</td><td>${escapeHtml(x.mobile_number)}</td><td>${insuranceBadge(getInsuranceType(x))}</td><td>${escapeHtml(x.city||"-")}</td><td><span class="status">${escapeHtml(x.status||"New")}</span></td></tr>`).join("")||`<tr><td colspan="5" class="empty">No leads found</td></tr>`}
 function renderLeads(rows){leadsTable.innerHTML=rows.map(x=>`<tr><td><strong>${escapeHtml(x.full_name)}</strong></td><td>${escapeHtml(x.mobile_number)}</td><td>${insuranceBadge(getInsuranceType(x))}</td><td>${escapeHtml(x.city||"-")}</td><td>${escapeHtml(x.lead_source||"-")}</td><td><span class="status">${escapeHtml(x.status||"New")}</span></td><td>${formatDate(x.next_follow_up)}</td><td><div class="actions"><button class="btn-secondary" onclick="viewLead(${Number(x.id)})">View</button><button class="btn-edit" onclick="editLead(${Number(x.id)})">Edit</button><button class="btn-danger" onclick="deleteLead(${Number(x.id)})">Delete</button></div></td></tr>`).join("")||`<tr><td colspan="8" class="empty">No leads found</td></tr>`}
 function searchLeads(v) {
@@ -1196,7 +1129,6 @@ async function deleteTask(id){
   await loadTasks();
 }
 document.addEventListener("DOMContentLoaded", () => {
-    const leadAlertNav=document.getElementById("leadAlertsNav");if(leadAlertNav&&!isMobilePWA())leadAlertNav.style.display="none";
     initializeAuth();
     initializeAuthStateListener();
     document.getElementById("loginForm").addEventListener("submit", handleLoginSubmit);
@@ -1650,7 +1582,6 @@ let currentAppointments=[];
 let currentFollowups=[];
 let currentCalendarMonth=new Date();
 let currentEditingAppointmentId=null;
-let originalEditingAppointment=null;
 
 async function loadCalendar(){
   if(!currentUser){console.warn("No authenticated user");return;}
@@ -1833,7 +1764,6 @@ const html=`
 </div>
 <div style="margin-top:20px;display:flex;gap:8px;">
 <button class="btn-primary" onclick="editAppointment(${id})">✏️ Edit</button>
-<button class="btn-secondary" onclick="rescheduleAppointment(${id})">🔄 Reschedule</button>
 <button class="btn-danger" onclick="confirmDeleteAppointment(${id})">🗑️ Delete</button>
 </div>
 `;
@@ -1844,7 +1774,6 @@ document.getElementById("appointmentModal").classList.add("show");
 function closeAppointmentModal(){
 document.getElementById("appointmentModal").classList.remove("show");
 currentEditingAppointmentId=null;
-originalEditingAppointment=null;
 }
 
 function openDateScheduleModal(dateStr){
@@ -1952,13 +1881,6 @@ if(!appt)return;
 openAppointmentFormModal(appt.lead_id,id);
 }
 
-function rescheduleAppointment(id){
-const appt=currentAppointments.find(a=>a.id===id);
-if(!appt)return;
-closeAppointmentModal();
-openAppointmentFormModal(appt.lead_id,id,true);
-}
-
 function confirmDeleteAppointment(id){
 deleteAppointment(id);
 }
@@ -1980,10 +1902,9 @@ document.getElementById("apptFormMobile").value=escapeHtml(selectedLead.mobile_n
 }
 }
 
-function openAppointmentFormModal(leadId,appointmentId,rescheduleMode=false){
+function openAppointmentFormModal(leadId,appointmentId){
 const appt=appointmentId?currentAppointments.find(a=>a.id===appointmentId):null;
-originalEditingAppointment=appt?{...appt}:null;
-const title=rescheduleMode?"Reschedule Appointment":(appt?"Edit Appointment":"New Appointment");
+const title=appt?"Edit Appointment":"New Appointment";
 const isEditMode=!!appt;
 const selectedLeadId=isEditMode?appt.lead_id:leadId;
 
@@ -2030,10 +1951,7 @@ ${leadsOptions}
 
 document.getElementById("appointmentFormContent").innerHTML=html;
 document.getElementById("appointmentFormTitle").textContent=title;
-document.getElementById("deleteApptButton").style.display=(isEditMode&&!rescheduleMode)?"block":"none";
-const saveBtn=document.querySelector("#appointmentFormModal .followup-modal-actions .btn-primary");
-if(saveBtn)saveBtn.textContent=rescheduleMode?"Save & Send WhatsApp":"Save Appointment";
-document.getElementById("appointmentFormModal").dataset.rescheduleMode=rescheduleMode?"1":"0";
+document.getElementById("deleteApptButton").style.display=isEditMode?"block":"none";
 if(!isEditMode&&selectedLeadId){
 autoFillLeadData();
 }
@@ -2060,33 +1978,11 @@ if(!customerName||!mobile||!date||!time||!status){alert("Please fill all require
 const formData={lead_id:leadId,customer_name:customerName,mobile_number:mobile,appointment_date:date,appointment_time:time,status:status,notes:notes||null};
 
 if(currentEditingAppointmentId){
- const oldAppt=originalEditingAppointment?{...originalEditingAppointment}:null;
- const changed=!!oldAppt&&(String(oldAppt.appointment_date||"")!==date||String(oldAppt.appointment_time||"")!==time);
- const id=currentEditingAppointmentId;
- await updateAppointment(id,formData);
- const rescheduleMode=document.getElementById("appointmentFormModal").dataset.rescheduleMode==="1";
- if(changed&&rescheduleMode){await sendAppointmentRescheduleWhatsApp(formData);}
- else if(changed&&confirm("Appointment date/time changed. Send WhatsApp reschedule message now?")){await sendAppointmentRescheduleWhatsApp(formData);}
+await updateAppointment(currentEditingAppointmentId,formData);
 }else{
- await saveAppointment(formData);
+await saveAppointment(formData);
 }
 closeAppointmentFormModal();
-}
-
-async function sendAppointmentRescheduleWhatsApp(formData){
- const waId=normalizeWhatsAppNumber(formData.mobile_number);
- if(!/^91[6-9]\d{9}$/.test(waId)){alert("Appointment saved, but customer mobile number is invalid for WhatsApp.");return;}
- const dateParts=String(formData.appointment_date).split("-");
- const displayDate=dateParts.length===3?dateParts[2]+"-"+dateParts[1]+"-"+dateParts[0]:formData.appointment_date;
- let displayTime=formData.appointment_time;
- try{const [hh,mm]=String(displayTime).split(":").map(Number);displayTime=String((hh%12)||12).padStart(2,"0")+":"+String(mm).padStart(2,"0")+" "+(hh>=12?"PM":"AM")}catch(e){}
- const status=document.getElementById("appointmentFormTitle");const oldTitle=status?.textContent||"Edit Appointment";if(status)status.textContent="Sending WhatsApp...";
- try{
-  const {data,error}=await supabaseClient.functions.invoke("whatsapp-send",{body:{wa_id:waId,type:"template",template_name:"fsp_appointment_rescheduled",language:"ta",parameters:[formData.customer_name,displayDate,displayTime]}});
-  if(error)throw error;if(!data?.ok)throw new Error(data?.error||"Send failed");
-  showMessage("Appointment updated & reschedule WhatsApp sent!","success");
- }catch(e){console.error(e);alert("Appointment updated, but reschedule WhatsApp could not be sent: "+(e?.message||"Send failed"))}
- finally{if(status)status.textContent=oldTitle}
 }
 
 async function deleteAppointmentFromForm(){
@@ -2114,14 +2010,11 @@ async function loadWhatsAppInbox(){
   const {data,error}=await supabaseClient.from("whatsapp_contacts").select("*").order("last_message_at",{ascending:false}).limit(100);
   if(error)throw error;
   whatsappContactsCache=data||[];
-  h.innerHTML=whatsappContactsCache.map(x=>{const n=Number(x.unread_count||0);return '<div class="wa-contact '+(n?'unread':'')+'" data-wa="'+escapeHtml(x.wa_id)+'" onclick="openWhatsAppConversation(\''+escapeHtml(x.wa_id)+'\')"><div class="wa-contact-name">'+escapeHtml(x.profile_name||formatWhatsAppPhone(x.wa_id))+'</div><div class="wa-contact-meta">'+escapeHtml(formatWhatsAppPhone(x.phone_number||x.wa_id))+' · '+escapeHtml(formatWhatsAppTime(x.last_message_at))+'</div>'+(n?'<span class="wa-unread-badge">'+(n>99?'99+':n)+'</span>':'')+'</div>'}).join("")||'<div class="empty">No WhatsApp conversations yet.</div>';
+  h.innerHTML=whatsappContactsCache.map(x=>'<div class="wa-contact" data-wa="'+escapeHtml(x.wa_id)+'" onclick="openWhatsAppConversation(\''+escapeHtml(x.wa_id)+'\')"><div class="wa-contact-name">'+escapeHtml(x.profile_name||formatWhatsAppPhone(x.wa_id))+'</div><div class="wa-contact-meta">'+escapeHtml(formatWhatsAppPhone(x.phone_number||x.wa_id))+' · '+escapeHtml(formatWhatsAppTime(x.last_message_at))+'</div></div>').join("")||'<div class="empty">No WhatsApp conversations yet.</div>';
  }catch(e){console.error("WhatsApp inbox load error",e);h.innerHTML='<div class="empty">Unable to load conversations. <button class="btn-secondary" onclick="loadWhatsAppInbox()">Retry</button></div>'}
 }
 async function openWhatsAppConversation(waId){
  currentWhatsAppWaId=waId;whatsappSeenAt[waId]=new Date().toISOString();
- const selectedContact=whatsappContactsCache.find(v=>v.wa_id===waId);
- if(Number(selectedContact?.unread_count||0)>0){selectedContact.unread_count=0;const readNow=new Date().toISOString();selectedContact.last_read_at=readNow;const {error:readErr}=await supabaseClient.rpc("mark_whatsapp_read",{p_wa_id:waId});if(readErr)console.error("Mark read failed",readErr);const row=document.querySelector(`.wa-contact[data-wa="${CSS.escape(waId)}"]`);if(row){row.classList.remove("unread");const badge=row.querySelector(".wa-unread-badge");if(badge)badge.remove();}}
-
  const x=whatsappContactsCache.find(v=>v.wa_id===waId);document.getElementById("waLayout").classList.add("chat-open");const composer=document.getElementById("waComposer");if(composer)composer.style.display="flex";
  document.getElementById("waChatHead").innerHTML='<div style="display:flex;gap:10px;align-items:center"><button class="btn-secondary" id="waBackBtn" onclick="closeWhatsAppConversation()">←</button><div><strong>'+escapeHtml(x?.profile_name||formatWhatsAppPhone(waId))+'</strong><div class="wa-contact-meta">'+escapeHtml(formatWhatsAppPhone(waId))+'</div></div></div>';
  const back=document.getElementById("waBackBtn");if(window.innerWidth>768)back.style.display="none";
@@ -2163,24 +2056,16 @@ async function sendWhatsAppConversationAttachment(input){
 }
 async function sendWhatsAppReply(){
  if(!currentWhatsAppWaId)return;
- const input=document.getElementById("waReplyText"),btn=document.getElementById("waSendBtn"),status=document.getElementById("waSendStatus"),box=document.getElementById("waMessages");
+ const input=document.getElementById("waReplyText"),btn=document.getElementById("waSendBtn"),status=document.getElementById("waSendStatus");
  const message=input.value.trim();if(!message)return;
- const waId=currentWhatsAppWaId,clientId="pending-"+Date.now();
- input.value="";status.textContent="";
- const pending=document.createElement("div");pending.className="wa-bubble outbound";pending.dataset.clientId=clientId;
- pending.innerHTML=escapeHtml(message)+'<span class="wa-time">Sending…</span>';box.appendChild(pending);box.scrollTop=box.scrollHeight;
- btn.disabled=true;
+ btn.disabled=true;btn.textContent="Sending...";status.textContent="";
  try{
-  const {data,error}=await supabaseClient.functions.invoke("whatsapp-send",{body:{wa_id:waId,message}});
+  const {data,error}=await supabaseClient.functions.invoke("whatsapp-send",{body:{wa_id:currentWhatsAppWaId,message}});
   if(error)throw error;if(!data?.ok)throw new Error(data?.error||"Send failed");
-  const t=pending.querySelector(".wa-time");if(t)t.textContent="✓ Sent";
-  setTimeout(()=>{if(currentWhatsAppWaId===waId)openWhatsAppConversation(waId);loadWhatsAppInbox();},500);
- }catch(e){
-  console.error(e);const t=pending.querySelector(".wa-time");if(t)t.textContent="⚠ Failed";
-  status.textContent="Message failed. Your text has been restored.";input.value=message;
- }finally{btn.disabled=false;btn.textContent="Send";input.focus()}
+  input.value="";status.textContent="Sent";await openWhatsAppConversation(currentWhatsAppWaId);await loadWhatsAppInbox();
+ }catch(e){console.error(e);status.textContent="Unable to send. Please try again."}
+ finally{btn.disabled=false;btn.textContent="Send"}
 }
-
 startWhatsAppAutoRefresh();
 
 const FSP_WA_TEMPLATES=[
@@ -2193,14 +2078,7 @@ Future Secure Providers உடனான உங்கள் appointment உறு
 தேதி: {{2}}
 நேரம்: {{3}}
 குறிப்பிட்ட நேரத்தில் உங்களை தொடர்பு கொள்கிறோம்.
-நன்றி.`,variables:"{{1}} = Customer Name, {{2}} = Date, {{3}} = Time"},
-{name:"fsp_appointment_rescheduled",label:"Appointment Rescheduled",purpose:"Notify customer of revised appointment date and time",language:"Tamil",message:`வணக்கம் {{1}},
-தவிர்க்க முடியாத காரணத்தினால், Future Secure Providers உடனான உங்கள் appointment நேரம் மாற்றியமைக்கப்பட்டுள்ளது.
-புதிய தேதி: {{2}}
-புதிய நேரம்: {{3}}
-ஏற்பட்ட சிரமத்திற்கு வருந்துகிறோம். குறிப்பிட்ட புதிய நேரத்தில் உங்களை தொடர்பு கொள்கிறோம்.
-உங்கள் புரிதலுக்கு நன்றி.
-Future Secure Providers`,variables:"{{1}} = Customer Name, {{2}} = New Date, {{3}} = New Time"}
+நன்றி.`,variables:"{{1}} = Customer Name, {{2}} = Date, {{3}} = Time"}
 ];
 let waTemplateMeta={};
 async function loadWhatsAppTemplates(){
@@ -2257,7 +2135,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=32', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=34', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
@@ -2268,6 +2146,12 @@ if ('serviceWorker' in navigator) {
             worker.postMessage({ type: 'SKIP_WAITING' });
           }
         });
+      });
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
       });
       console.log('[PWA] Service Worker ready:', registration.scope);
     } catch (error) {
