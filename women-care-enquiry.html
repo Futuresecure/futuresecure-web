@@ -564,7 +564,22 @@ input,select,textarea,.age-input{background:#fff!important;color:#482238!importa
 input:focus,select:focus,textarea:focus,.age-input:focus{border-color:var(--wc-pink)!important}
 input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important}
 .cta{background:linear-gradient(90deg,var(--wc-pink),var(--wc-pink2))!important;color:#fff!important}
-</style></head>
+</style>
+<style id="women-care-alignment-fix">
+.form-wrap{max-width:752px!important;margin:34px auto!important;padding:0 16px!important}
+.member-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;width:100%!important}
+.member-card{width:100%!important;min-height:76px!important;margin:0!important;padding:12px 14px!important}
+.member-head{margin:0!important;min-height:24px!important}
+.age-row{margin-top:8px!important}
+.details-grid{grid-template-columns:repeat(3,minmax(0,1fr))!important;width:100%!important}
+.callback-section,.consent,.cta{width:100%!important}
+.callback-grid{grid-template-columns:1fr 1fr!important}
+@media(max-width:640px){
+ .form-wrap{width:100%!important;margin:20px auto!important;padding:0 14px!important}
+ .member-grid,.details-grid,.callback-grid{grid-template-columns:1fr!important}
+}
+</style>
+</head>
 
 <body>
 <form class="form-wrap" id="quoteForm">
