@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=30">
+<link rel="manifest" href="./manifest.json?v=31">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -2103,7 +2103,7 @@ async function loadWhatsAppInbox(){
 async function openWhatsAppConversation(waId){
  currentWhatsAppWaId=waId;whatsappSeenAt[waId]=new Date().toISOString();
  const selectedContact=whatsappContactsCache.find(v=>v.wa_id===waId);
- if(Number(selectedContact?.unread_count||0)>0){selectedContact.unread_count=0;const readNow=new Date().toISOString();selectedContact.last_read_at=readNow;await supabaseClient.from("whatsapp_contacts").update({unread_count:0,last_read_at:readNow}).eq("wa_id",waId);}
+ if(Number(selectedContact?.unread_count||0)>0){selectedContact.unread_count=0;const readNow=new Date().toISOString();selectedContact.last_read_at=readNow;const {error:readErr}=await supabaseClient.rpc("mark_whatsapp_read",{p_wa_id:waId});if(readErr)console.error("Mark read failed",readErr);const row=document.querySelector(`.wa-contact[data-wa="${CSS.escape(waId)}"]`);if(row){row.classList.remove("unread");const badge=row.querySelector(".wa-unread-badge");if(badge)badge.remove();}}
 
  const x=whatsappContactsCache.find(v=>v.wa_id===waId);document.getElementById("waLayout").classList.add("chat-open");const composer=document.getElementById("waComposer");if(composer)composer.style.display="flex";
  document.getElementById("waChatHead").innerHTML='<div style="display:flex;gap:10px;align-items:center"><button class="btn-secondary" id="waBackBtn" onclick="closeWhatsAppConversation()">←</button><div><strong>'+escapeHtml(x?.profile_name||formatWhatsAppPhone(waId))+'</strong><div class="wa-contact-meta">'+escapeHtml(formatWhatsAppPhone(waId))+'</div></div></div>';
@@ -2240,7 +2240,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=30', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=31', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
