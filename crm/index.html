@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://cjwxirpwzluynymwjzxl.supabase.co" crossorigin>
 <link rel="icon" type="image/x-icon" href="../pwa-icon.svg">
-<link rel="manifest" href="./manifest.json?v=40">
+<link rel="manifest" href="./manifest.json?v=41">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -2031,13 +2031,22 @@ async function loadWhatsAppInbox(){
 async function openWhatsAppConversation(waId){
  currentWhatsAppWaId=waId;whatsappSeenAt[waId]=new Date().toISOString();
  const x=whatsappContactsCache.find(v=>v.wa_id===waId);document.getElementById("waLayout").classList.add("chat-open");const composer=document.getElementById("waComposer");if(composer)composer.style.display="flex";
- document.getElementById("waChatHead").innerHTML='<div style="display:flex;gap:10px;align-items:center"><button class="btn-secondary" id="waBackBtn" onclick="closeWhatsAppConversation()">←</button><div><strong>'+escapeHtml(x?.profile_name||formatWhatsAppPhone(waId))+'</strong><div class="wa-contact-meta">'+escapeHtml(formatWhatsAppPhone(waId))+'</div></div></div>';
+ document.getElementById("waChatHead").innerHTML='<div style="display:flex;gap:10px;align-items:center;justify-content:space-between;width:100%"><div style="display:flex;gap:10px;align-items:center;min-width:0"><button class="btn-secondary" id="waBackBtn" onclick="closeWhatsAppConversation()">←</button><div><strong>'+escapeHtml(x?.profile_name||formatWhatsAppPhone(waId))+'</strong><div class="wa-contact-meta">'+escapeHtml(formatWhatsAppPhone(waId))+'</div></div></div><button class="btn-danger" type="button" style="padding:7px 10px;flex:0 0 auto" onclick="deleteCurrentWhatsAppConversation()">🗑️ Delete Chat</button></div>';
  const back=document.getElementById("waBackBtn");if(window.innerWidth>768)back.style.display="none";
  document.querySelectorAll(".wa-contact").forEach(el=>el.classList.toggle("active",el.dataset.wa===waId));
  const box=document.getElementById("waMessages");box.innerHTML='<div class="wa-placeholder">Loading...</div>';
  const {data,error}=await supabaseClient.from("whatsapp_messages").select("id,direction,message_type,message_text,message_timestamp,created_at,delivery_status,status_timestamp,read_at").eq("wa_id",waId).order("message_timestamp",{ascending:true});
  if(error){box.innerHTML='<div class="wa-placeholder">Unable to load messages.</div>';console.error(error);return}
  box.innerHTML=(data||[]).map(m=>'<div class="wa-bubble '+(m.direction==="outbound"?"outbound":"")+'" data-message-id="'+m.id+'">'+(m.message_text?escapeHtml(m.message_text):'<em>['+escapeHtml(m.message_type)+' message]</em>')+'<button class="wa-msg-delete" type="button" title="Delete from CRM" onclick="deleteWhatsAppMessage('+m.id+')">🗑️</button><span class="wa-time">'+escapeHtml(formatWhatsAppTime(m.message_timestamp||m.created_at))+escapeHtml(waStatusLabel(m))+'</span></div>').join("")||'<div class="wa-placeholder">No messages.</div>';box.scrollTop=box.scrollHeight;
+}
+async function deleteCurrentWhatsAppConversation(){
+ const waId=currentWhatsAppWaId;if(!waId)return;
+ if(!confirm("Delete this contact and all CRM chat messages? This does not delete anything from the customer's WhatsApp."))return;
+ const r=await supabaseClient.rpc("delete_whatsapp_conversation",{p_wa_id:waId});
+ if(r.error){alert("Unable to delete contact: "+r.error.message);return;}
+ closeWhatsAppConversation();
+ await loadWhatsAppInbox();
+ showMessage("WhatsApp contact and CRM chat deleted.","success");
 }
 async function deleteWhatsAppMessage(id){
  if(!confirm("Delete this message from CRM Inbox?\n\nThis will not delete the message from the customer's WhatsApp."))return;
@@ -2156,7 +2165,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=40', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=41', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
