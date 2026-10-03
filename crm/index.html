@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=31">
+<link rel="manifest" href="./manifest.json?v=32">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -1827,6 +1827,7 @@ const html=`
 </div>
 <div style="margin-top:20px;display:flex;gap:8px;">
 <button class="btn-primary" onclick="editAppointment(${id})">✏️ Edit</button>
+<button class="btn-secondary" onclick="rescheduleAppointment(${id})">🔄 Reschedule</button>
 <button class="btn-danger" onclick="confirmDeleteAppointment(${id})">🗑️ Delete</button>
 </div>
 `;
@@ -1945,6 +1946,13 @@ if(!appt)return;
 openAppointmentFormModal(appt.lead_id,id);
 }
 
+function rescheduleAppointment(id){
+const appt=currentAppointments.find(a=>a.id===id);
+if(!appt)return;
+closeAppointmentModal();
+openAppointmentFormModal(appt.lead_id,id,true);
+}
+
 function confirmDeleteAppointment(id){
 deleteAppointment(id);
 }
@@ -1966,10 +1974,10 @@ document.getElementById("apptFormMobile").value=escapeHtml(selectedLead.mobile_n
 }
 }
 
-function openAppointmentFormModal(leadId,appointmentId){
+function openAppointmentFormModal(leadId,appointmentId,rescheduleMode=false){
 const appt=appointmentId?currentAppointments.find(a=>a.id===appointmentId):null;
 originalEditingAppointment=appt?{...appt}:null;
-const title=appt?"Edit Appointment":"New Appointment";
+const title=rescheduleMode?"Reschedule Appointment":(appt?"Edit Appointment":"New Appointment");
 const isEditMode=!!appt;
 const selectedLeadId=isEditMode?appt.lead_id:leadId;
 
@@ -2016,7 +2024,10 @@ ${leadsOptions}
 
 document.getElementById("appointmentFormContent").innerHTML=html;
 document.getElementById("appointmentFormTitle").textContent=title;
-document.getElementById("deleteApptButton").style.display=isEditMode?"block":"none";
+document.getElementById("deleteApptButton").style.display=(isEditMode&&!rescheduleMode)?"block":"none";
+const saveBtn=document.querySelector("#appointmentFormModal .followup-modal-actions .btn-primary");
+if(saveBtn)saveBtn.textContent=rescheduleMode?"Save & Send WhatsApp":"Save Appointment";
+document.getElementById("appointmentFormModal").dataset.rescheduleMode=rescheduleMode?"1":"0";
 if(!isEditMode&&selectedLeadId){
 autoFillLeadData();
 }
@@ -2047,9 +2058,9 @@ if(currentEditingAppointmentId){
  const changed=!!oldAppt&&(String(oldAppt.appointment_date||"")!==date||String(oldAppt.appointment_time||"")!==time);
  const id=currentEditingAppointmentId;
  await updateAppointment(id,formData);
- if(changed&&confirm("Appointment date/time changed. Send WhatsApp reschedule message now?")){
-   await sendAppointmentRescheduleWhatsApp(formData);
- }
+ const rescheduleMode=document.getElementById("appointmentFormModal").dataset.rescheduleMode==="1";
+ if(changed&&rescheduleMode){await sendAppointmentRescheduleWhatsApp(formData);}
+ else if(changed&&confirm("Appointment date/time changed. Send WhatsApp reschedule message now?")){await sendAppointmentRescheduleWhatsApp(formData);}
 }else{
  await saveAppointment(formData);
 }
@@ -2240,7 +2251,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=31', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=32', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
