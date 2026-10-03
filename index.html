@@ -48,7 +48,7 @@
     <meta property="og:image" content="https://YOUR-DOMAIN.com/assets/fsp-hero-family.jpg">
     <meta property="og:url" content="https://YOUR-DOMAIN.com/">
     
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
     
     <style>
         * {
@@ -3748,7 +3748,11 @@
             color: #ffffff !important;
             opacity: 1 !important;
         }
-    </style>
+    
+/* Performance: skip off-screen rendering until needed */
+main section, footer { content-visibility:auto; contain-intrinsic-size:1px 800px; }
+img { content-visibility:auto; }
+</style>
   <script src="crm-form-bridge.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3861,7 +3865,7 @@
                     <div class="service-image">
                         <img src="assets/health-insurance.png" 
                              alt="Family consulting with a doctor about health protection"
-                             loading="lazy" decoding="async">
+                             loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="service-content">
                         <h3>Health Insurance</h3>
@@ -3874,7 +3878,7 @@
                     <div class="service-image">
                         <img src="assets/women-care-insurance.png"
                              alt="Women Care Insurance - Pregnancy and maternity consultation"
-                             loading="lazy" decoding="async">
+                             loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="service-content">
                         <h3>Women Care Insurance</h3>
@@ -3887,7 +3891,7 @@
                     <div class="service-image">
                         <img src="assets/Family Security with Top-Up Cover.png"
                              alt="Super Top-Up Insurance - Family Security with Top-Up Cover"
-                             loading="lazy" decoding="async">
+                             loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="service-content">
                         <h3>Super Top-Up Insurance</h3>
@@ -3900,7 +3904,7 @@
                     <div class="service-image">
                         <img src="assets/vehicle-insurance.png"
                              alt="Indian family with their car and two-wheeler"
-                             loading="lazy" decoding="async">
+                             loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="service-content">
                         <h3>Vehicle Insurance</h3>
@@ -3913,7 +3917,7 @@
                     <div class="service-image">
                         <img src="assets/life-insurance.png"
                              alt="Indian family together at home"
-                             loading="lazy" decoding="async">
+                             loading="lazy" decoding="async" fetchpriority="low">
                     </div>
                     <div class="service-content">
                         <h3>Life Insurance</h3>
@@ -3930,7 +3934,7 @@
         <div class="container">
             <div class="about-content">
                 <div class="about-image">
-                    <img src="assets/fsp-founder.jpg" alt="J. Stalin Mariaraj – Insurance Advisor, Future Secure Providers" style="width: 100%; height: auto;" loading="lazy" decoding="async">
+                    <img src="assets/fsp-founder.jpg" alt="J. Stalin Mariaraj – Insurance Advisor, Future Secure Providers" style="width: 100%; height: auto;" loading="lazy" decoding="async" fetchpriority="low">
                 </div>
                 <div class="about-text">
                     <h2>என்னைப்பற்றி</h2>
@@ -4009,7 +4013,7 @@
                     <img src="assets/why-fsp.png"
                          alt="Indian family within a protective environment"
                          class="why-family-image"
-                         loading="lazy" decoding="async">
+                         loading="lazy" decoding="async" fetchpriority="low">
                 </div>
             </div>
         </div>
@@ -4056,7 +4060,7 @@
         <div class="container">
             <div class="faq-content-wrapper">
                 <div class="faq-image-column">
-                    <img src="assets/faq.png" alt="FAQ - Insurance Advisor" class="faq-image" loading="lazy" decoding="async">
+                    <img src="assets/faq.png" alt="FAQ - Insurance Advisor" class="faq-image" loading="lazy" decoding="async" fetchpriority="low">
                 </div>
                 
                 <div class="faq-content-column">
@@ -4152,7 +4156,7 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <img src="assets/fsp-logo.jpg" alt="Future Secure Providers" style="height: 45px; width: auto; margin-right: 1rem;" loading="lazy" decoding="async">
+                        <img src="assets/fsp-logo.jpg" alt="Future Secure Providers" style="height: 45px; width: auto; margin-right: 1rem;" loading="lazy" decoding="async" fetchpriority="low">
                         <span>Future Secure<br>Providers</span>
                     </div>
                     <div class="footer-desc">
