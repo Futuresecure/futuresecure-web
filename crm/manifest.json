@@ -10,13 +10,13 @@
   "theme_color": "#247d78",
   "icons": [
     {
-      "src": "./logo.jpg",
+      "src": "../pwa-icon.svg",
       "sizes": "2048x2048",
       "type": "image/jpeg",
       "purpose": "any"
     },
     {
-      "src": "./logo.jpg",
+      "src": "../pwa-icon.svg",
       "sizes": "2048x2048",
       "type": "image/jpeg",
       "purpose": "maskable"
@@ -34,7 +34,7 @@
       "url": "./?page=dashboard",
       "icons": [
         {
-          "src": "./logo.jpg",
+          "src": "../pwa-icon.svg",
           "sizes": "2048x2048",
           "type": "image/jpeg"
         }
@@ -47,7 +47,7 @@
       "url": "./?page=leads",
       "icons": [
         {
-          "src": "./logo.jpg",
+          "src": "../pwa-icon.svg",
           "sizes": "2048x2048",
           "type": "image/jpeg"
         }
