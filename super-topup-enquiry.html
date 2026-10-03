@@ -998,3 +998,147 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+    }[char]));
+}
+
+function collectFamilyMembers() {
+    const members = [];
+    document.querySelectorAll('.member-card').forEach(card => {
+        const check = card.querySelector('.member-check');
+        if (!check || !check.checked) return;
+        const label = (card.querySelector('.member-head span')?.textContent || '').replace(/[👤👩👦👧]/g,'').trim();
+        const ages = [...card.querySelectorAll('input.age-input')].map(x => x.value.trim()).filter(Boolean);
+        members.push(label + (ages.length ? ' - Age ' + ages.join(', ') : ''));
+    });
+    return members;
+}
+
+function getCallbackTime() {
+    const h = document.getElementById('callbackTimeHour')?.value || '';
+    const m = document.getElementById('callbackTimeMinute')?.value || '';
+    const p = document.getElementById('callbackTimePeriod')?.value || '';
+    return h && m && p ? h + ':' + m + ' ' + p : '';
+}
+
+const quoteForm = document.getElementById('quoteForm');
+quoteForm.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    if (!quoteForm.checkValidity()) {
+        quoteForm.reportValidity();
+        return;
+    }
+
+    const submitButton = quoteForm.querySelector('button[type="submit"]');
+    const originalText = submitButton.textContent;
+    submitButton.disabled = true;
+    submitButton.textContent = 'Submitting...';
+
+    try {
+        const fd = new FormData(quoteForm);
+        const name = String(fd.get('name') || '').trim();
+        const pincode = String(fd.get('pincode') || '').trim();
+        const mobile = String(fd.get('mobile') || '').replace(/\D/g,'');
+        if (!/^[6-9]\d{9}$/.test(mobile)) {
+            alert('சரியான 10 digit mobile number-ஐ உள்ளிடவும்.');
+            return;
+        }
+        if (!/^\d{6}$/.test(pincode)) {
+            alert('சரியான 6 digit PINCODE-ஐ உள்ளிடவும்.');
+            return;
+        }
+
+        const familyMembers = collectFamilyMembers();
+        const medicalYes = document.querySelector('input[name="medical"]:checked')?.value === 'yes';
+        const conditions = [...document.querySelectorAll('input[name="conditions"]:checked')].map(x => x.value);
+        const medicalInfo = medicalYes ? (conditions.length ? conditions.join(', ') : 'Medical condition declared') : 'இல்லை';
+
+        const existing = document.querySelector('input[name="existingInsurance"]:checked')?.value || 'No';
+        const existingCover = existing === 'Yes' ? String(fd.get('existingSumInsured') || '').trim() : '';
+        const existingInsurer = existing === 'Yes' ? String(fd.get('existingInsurer') || '').trim() : '';
+        const existingExpiry = existing === 'Yes' ? String(fd.get('existingExpiryDate') || '').trim() : '';
+        const callbackDate = String(fd.get('callbackDate') || '').trim();
+        const callbackTime = getCallbackTime();
+
+        const notes = [
+            'Existing Health Insurance: ' + existing,
+            existingCover ? 'Existing Cover: ' + existingCover : '',
+            existingInsurer ? 'Insurance Company: ' + existingInsurer : '',
+            existingExpiry ? 'Policy Expiry: ' + existingExpiry : '',
+            callbackDate ? 'Callback Date: ' + callbackDate : '',
+            callbackTime ? 'Callback Time: ' + callbackTime : '',
+            'Consent: Yes'
+        ].filter(Boolean).join(' | ');
+
+        // CRM / Supabase
+        if (typeof window.saveFspLead !== 'function') throw new Error('CRM connection is not available.');
+        const crmResult = await window.saveFspLead({
+            full_name: name,
+            mobile_number: mobile,
+            pincode: pincode,
+            city: '',
+            family_members: familyMembers.join(', '),
+            medical_info: medicalInfo,
+            product: 'Super Top-Up Insurance',
+            lead_source: 'Website',
+            notes: notes
+        });
+        if (!crmResult || !crmResult.success) {
+            throw new Error((crmResult && crmResult.error) || 'CRM save failed');
+        }
+
+        // Google Sheet (same endpoint used by Women Care / website enquiries)
+        const googleLeadPayload = {
+            product: 'Super Top-Up Insurance',
+            name: name,
+            mobile: mobile,
+            pincode_city: 'Pincode: ' + pincode,
+            family_members: familyMembers.join(', '),
+            medical_info: medicalInfo,
+            age: '',
+            occupation: '',
+            income: '',
+            existing_cover: existingCover,
+            purpose: 'Super Top-Up Insurance',
+            vehicle_type: '',
+            registration: '',
+            expiry: existingExpiry,
+            insurance_company: existingInsurer,
+            insurance_type: 'Super Top-Up Insurance',
+            claim: '',
+            callback_date: callbackDate,
+            callback_time: callbackTime,
+            source: 'Website Super Top-Up Insurance'
+        };
+
+        await fetch('https://script.google.com/macros/s/AKfycbyOSFOeZZq-UkKyX5TBX7FK7FmEMswDYquskgF6NBzQ1NlOHpNRV5fhnfrr-DyHw0iR4A/exec', {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {'Content-Type':'text/plain;charset=utf-8'},
+            body: JSON.stringify(googleLeadPayload)
+        });
+
+        quoteForm.innerHTML = `
+          <div class="confirmation">
+            <div class="success-icon">✓</div>
+            <div class="celebrate">🎉</div>
+            <h1>Super Top-Up Enquiry வெற்றிகரமாக பதிவு செய்யப்பட்டது.</h1>
+            <p class="confirmation-text">உங்கள் விவரங்கள் Future Secure Providers-க்கு கிடைத்துவிட்டது. Advisor உங்களை தொடர்பு கொள்வார்.</p>
+            <div class="submitted-details">
+              <div class="detail-row"><span>பெயர்</span><strong>${escapeHtml(name)}</strong></div>
+              <div class="detail-row"><span>மொபைல்</span><strong>${escapeHtml(mobile)}</strong></div>
+              <div class="detail-row"><span>Insurance</span><strong>Super Top-Up Insurance</strong></div>
+            </div>
+            <div class="assistance">Future Secure Providers : Call 9585 905 905, 9363 705 905.</div>
+          </div>`;
+    } catch (error) {
+        console.error('Super Top-Up enquiry submit failed:', error);
+        alert('Enquiry submit ஆகவில்லை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.');
+        submitButton.disabled = false;
+        submitButton.textContent = originalText;
+    }
+});
+</script>
+</body>
+</html>
