@@ -575,7 +575,8 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important
             இன்சூரன்ஸ் தேவைப்படும் குடும்ப உறுப்பினர்களைத் தேர்ந்தெடுத்து, அவர்களின் வயதை குறிப்பிடவும்.
         </p>
 
-        <div class="member-grid">\n<div class="member-card">
+        <div class="member-grid">
+<div class="member-card">
                 <div class="member-head">
                     <input type="checkbox" class="member-check">
                     <span>நான் (Self)</span>
@@ -583,7 +584,8 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important
                 <div class="member-row age-row" hidden>
                     <input class="age-input" type="number" min="18" max="100" placeholder="Age">
                 </div>
-            </div>\n<div class="member-card">
+            </div>
+<div class="member-card">
                 <div class="member-head">
                     <input type="checkbox" class="member-check">
                     <span>வாழ்க்கைத் துணை (Spouse)</span>
@@ -591,7 +593,9 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important
                 <div class="member-row age-row" hidden>
                     <input class="age-input" type="number" min="18" max="100" placeholder="Age">
                 </div>
-            </div>\n</div>\n    </section>
+            </div>
+        </div>
+    </section>
 
     <section class="section">
         <h2 class="section-title">2. மருத்துவ நிலை</h2>
@@ -653,7 +657,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important
                 <div class="callback-field">
                     <label for="callbackDate">தேதி</label>
                     <div class="date-picker-wrap">
-                        <input type="date" id="callbackDate" name="callbackDate">
+                        <input type="date" id="callbackDate" name="callbackDate" required>
                         <button type="button" class="picker-btn" id="calendarBtn" aria-label="Open calendar">📅</button>
                     </div>
                 </div>
@@ -661,7 +665,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important
                 <div class="callback-field">
                     <label>விருப்பமான நேரம்</label>
                     <div class="callback-time-select-group">
-                        <select id="callbackTimeHour" name="callbackTimeHour" aria-label="Hour">
+                        <select id="callbackTimeHour" name="callbackTimeHour" aria-label="Hour" required>
                             <option value="">Hour</option>
                             <option value="09">09</option>
                             <option value="10">10</option>
@@ -677,7 +681,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important
                             <option value="08">08</option>
                         </select>
 
-                        <select id="callbackTimeMinute" name="callbackTimeMinute" aria-label="Minute">
+                        <select id="callbackTimeMinute" name="callbackTimeMinute" aria-label="Minute" required>
                             <option value="">Min</option>
                             <option value="00">00</option>
                             <option value="10">10</option>
@@ -687,7 +691,7 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important
                             <option value="50">50</option>
                         </select>
 
-                        <select id="callbackTimePeriod" name="callbackTimePeriod" aria-label="AM or PM">
+                        <select id="callbackTimePeriod" name="callbackTimePeriod" aria-label="AM or PM" required>
                             <option value="">AM/PM</option>
                             <option value="AM">AM</option>
                             <option value="PM">PM</option>
@@ -764,6 +768,8 @@ function addChild(type) {
             <button type="button" class="remove-child" onclick="removeChild(this)">🗑</button>
         `;
         container.appendChild(item);
+        const ageInput = item.querySelector('.age-input');
+        if (ageInput) ageInput.required = true;
     } else {
         daughterCount++;
         const item = document.createElement('div');
@@ -775,6 +781,8 @@ function addChild(type) {
             <button type="button" class="remove-child" onclick="removeChild(this)">🗑</button>
         `;
         container.appendChild(item);
+        const ageInput = item.querySelector('.age-input');
+        if (ageInput) ageInput.required = true;
     }
 }
 
@@ -827,10 +835,24 @@ document.addEventListener('DOMContentLoaded', () => {
         checkbox.addEventListener('change', () => {
             if (checkbox.id === 'sonCheck') {
                 setChildVisibility('son', checkbox.checked);
+                const container = document.getElementById('sons');
+                if (container) {
+                    container.querySelectorAll('.age-input').forEach(input => {
+                        input.required = checkbox.checked;
+                    });
+                }
             } else if (checkbox.id === 'daughterCheck') {
                 setChildVisibility('daughter', checkbox.checked);
+                const container = document.getElementById('daughters');
+                if (container) {
+                    container.querySelectorAll('.age-input').forEach(input => {
+                        input.required = checkbox.checked;
+                    });
+                }
             } else {
                 setMemberVisibility(card, checkbox.checked);
+                const ageInput = card.querySelector('.age-row .age-input');
+                if (ageInput) ageInput.required = checkbox.checked;
             }
         });
     });
@@ -841,10 +863,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const calendarBtn = document.getElementById('calendarBtn');
 
     if (callbackDateInput) {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
+        // Website callback appointments can be selected only from tomorrow onward.
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const yyyy = tomorrow.getFullYear();
+        const mm = String(tomorrow.getMonth() + 1).padStart(2, '0');
+        const dd = String(tomorrow.getDate()).padStart(2, '0');
         callbackDateInput.min = `${yyyy}-${mm}-${dd}`;
     }
 
@@ -942,3 +966,321 @@ function escapeHtml(value) {
         payload = payload || {};
         const fullName = String(payload.full_name || '').trim();
         const mobile = cleanMobile(payload.mobile_number);
+
+        if (fullName.length < 2 || !/^[6-9]\d{9}$/.test(mobile)) {
+            return { success: false, error: 'Invalid name or mobile number' };
+        }
+
+        try {
+            const supabase = await getSupabase();
+            const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+            const existing = await client.from('leads').select('id').eq('mobile_number', mobile).limit(1);
+            if (existing.error) throw existing.error;
+
+            if (existing.data && existing.data.length) {
+                return { success: true, duplicate: true, lead_id: existing.data[0].id };
+            }
+
+            let notes = String(payload.notes || '').trim();
+            const product = String(payload.product || '').trim();
+            if (product) notes = notes ? 'Product: ' + product + ' | ' + notes : 'Product: ' + product;
+
+            const rpc = await client.rpc('handle_website_lead_creation', {
+                p_full_name: fullName,
+                p_mobile_number: mobile,
+                p_city: payload.city ? String(payload.city).trim() : null,
+                p_lead_source: payload.lead_source || sourceFromSession(),
+                p_pincode: payload.pincode ? String(payload.pincode).trim() : null,
+                p_family_members: payload.family_members ? String(payload.family_members) : null,
+                p_medical_info: payload.medical_info ? String(payload.medical_info) : 'இல்லை',
+                p_notes: notes || null
+            });
+
+            if (rpc.error) throw rpc.error;
+            if (!rpc.data || !rpc.data.success) throw new Error('Lead creation failed');
+
+            return { success: true, duplicate: false, lead_id: rpc.data.lead_id };
+        } catch (error) {
+            console.error('FSP CRM lead save failed:', error);
+            return { success: false, error: error && error.message ? error.message : String(error) };
+        }
+    };
+})();
+
+const quoteForm = document.getElementById('quoteForm');
+if (quoteForm) {
+    // Show a clear age-specific message instead of the browser's generic
+    // "Please fill out this field" message.
+    quoteForm.addEventListener('invalid', function(e) {
+        const input = e.target;
+        if (!input || !input.classList || !input.classList.contains('age-input')) return;
+
+        let memberName = 'குடும்ப உறுப்பினரின்';
+        const card = input.closest('.member-card');
+
+        if (card) {
+            const check = card.querySelector('.member-check');
+            if (check?.id === 'sonCheck') {
+                const item = input.closest('.child-item');
+                memberName = item?.querySelector('.child-name')?.textContent?.trim() || 'Son';
+            } else if (check?.id === 'daughterCheck') {
+                const item = input.closest('.child-item');
+                memberName = item?.querySelector('.child-name')?.textContent?.trim() || 'Daughter';
+            } else {
+                memberName = card.querySelector('.member-head span')?.textContent?.trim() || memberName;
+            }
+        }
+
+        input.setCustomValidity(memberName + ' வயதை உள்ளிடவும்.');
+    }, true);
+
+    quoteForm.addEventListener('input', function(e) {
+        const input = e.target;
+        if (input?.classList?.contains('age-input')) {
+            input.setCustomValidity('');
+        }
+    });
+}
+
+document.getElementById('quoteForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    if (!this.checkValidity()) {
+        this.reportValidity();
+        return;
+    }
+
+    const form = this;
+    const name = form.querySelector('[name="name"]')?.value?.trim() || '';
+    const pincode = form.querySelector('[name="pincode"]')?.value?.trim() || '';
+    const mobile = form.querySelector('[name="mobile"]')?.value?.trim() || '';
+    const callbackDate = form.querySelector('[name="callbackDate"]')?.value?.trim() || '';
+    const callbackTimeHour = form.querySelector('[name="callbackTimeHour"]')?.value?.trim() || '';
+    const callbackTimeMinute = form.querySelector('[name="callbackTimeMinute"]')?.value?.trim() || '';
+    const callbackTimePeriod = form.querySelector('[name="callbackTimePeriod"]')?.value?.trim() || '';
+
+    const callbackTime = (
+        callbackTimeHour && callbackTimeMinute && callbackTimePeriod
+    ) ? `${callbackTimeHour}:${callbackTimeMinute} ${callbackTimePeriod}` : '';
+
+    const selectedMembers = [];
+
+    // At least one family member must be selected before submission.
+    const selectedMemberChecks = Array.from(form.querySelectorAll('.member-check:checked'));
+    if (selectedMemberChecks.length === 0) {
+        alert('குறைந்தது ஒரு குடும்ப உறுப்பினரை தேர்வு செய்யவும்.');
+        const firstMemberCheck = form.querySelector('.member-check');
+        if (firstMemberCheck) firstMemberCheck.focus();
+        return;
+    }
+
+    // Every selected family member must have an age before submission.
+    let missingMemberAgeInput = null;
+    form.querySelectorAll('.member-card').forEach(card => {
+        const check = card.querySelector('.member-check');
+        if (!check || !check.checked || missingMemberAgeInput) return;
+
+        if (check.id === 'sonCheck' || check.id === 'daughterCheck') {
+            const type = check.id === 'sonCheck' ? 'Son' : 'Daughter';
+            const container = document.getElementById(type === 'Son' ? 'sons' : 'daughters');
+            const childInputs = container ? container.querySelectorAll('.child-item .age-input') : [];
+            childInputs.forEach(input => {
+                if (!String(input.value || '').trim() && !missingMemberAgeInput) {
+                    missingMemberAgeInput = input;
+                }
+            });
+        } else {
+            const ageInput = card.querySelector('.age-row .age-input');
+            if (ageInput && !String(ageInput.value || '').trim()) {
+                missingMemberAgeInput = ageInput;
+            }
+        }
+    });
+
+    if (missingMemberAgeInput) {
+        alert('தேர்ந்தெடுத்த ஒவ்வொரு குடும்ப உறுப்பினருக்கும் வயதை கட்டாயமாக உள்ளிடவும்.');
+        missingMemberAgeInput.focus();
+        return;
+    }
+
+    form.querySelectorAll('.member-card').forEach(card => {
+        const check = card.querySelector('.member-check');
+        if (!check || !check.checked) return;
+
+        const label = card.querySelector('.member-head span')?.textContent?.trim() || '';
+        const age = card.querySelector('.age-row .age-input')?.value?.trim();
+
+        if (check.id === 'sonCheck' || check.id === 'daughterCheck') {
+            const type = check.id === 'sonCheck' ? 'Son' : 'Daughter';
+            const container = document.getElementById(type === 'Son' ? 'sons' : 'daughters');
+
+            if (container) {
+                container.querySelectorAll('.child-item').forEach((item, index) => {
+                    const childAge = item.querySelector('.age-input')?.value?.trim() || '';
+                    selectedMembers.push(`${type} ${index + 1}${childAge ? ` (${childAge})` : ''}`);
+                });
+            }
+        } else {
+            selectedMembers.push(`${label}${age ? ` (${age})` : ''}`);
+        }
+    });
+
+    const medicalAnswer = form.querySelector('input[name="medical"]:checked')?.value || 'no';
+    const medicalConditions = Array.from(form.querySelectorAll('input[name="conditions"]:checked')).map(el => el.value);
+    const medicalInfo = medicalAnswer === 'yes'
+        ? (medicalConditions.length ? medicalConditions.join(', ') : 'ஆம் (Yes)')
+        : 'இல்லை (No)';
+
+    const crmResult = await window.saveFspLead({
+        product: 'Women Care Insurance',
+        full_name: name,
+        mobile_number: mobile,
+        city: 'Pincode: ' + pincode,
+        pincode: pincode,
+        family_members: selectedMembers.join(', '),
+        medical_info: medicalInfo,
+        notes: [
+            'Women Care Insurance Enquiry',
+            'Family: ' + (selectedMembers.join(', ') || '—'),
+            'Pincode: ' + pincode,
+            'Medical: ' + medicalInfo,
+            'Callback Date: ' + (callbackDate || ''),
+            'Callback Time: ' + (callbackTime || ''),
+            'Consent: Yes'
+        ].join(' | ')
+    });
+
+    if (!crmResult.success) {
+        console.error('Women Care enquiry CRM save failed:', crmResult.error);
+        alert('Enquiry save ஆகவில்லை. தயவுசெய்து மீண்டும் முயற்சி செய்யவும்.');
+        return;
+    }
+
+    const wrapper = document.querySelector('.form-wrap');
+
+    wrapper.innerHTML = `
+        <div class="confirmation">
+            <div class="success-icon">✓</div>
+
+            <div class="celebrate">🎉</div>
+
+            <h1>உங்கள் Women Care Enquiry வெற்றிகரமாக பதிவு செய்யப்பட்டுள்ளது.</h1>
+
+            <p class="confirmation-text">
+                உங்கள் Women Care enquiry பெறப்பட்டுள்ளது. உங்கள் தேவைக்கேற்ப Women Care<br>Insurance options குறித்து எங்கள் Insurance Advisor விரைவில் உங்களைத் தொடர்புகொண்டு,<br>
+                தேவையான வழிகாட்டுதலை வழங்குவார்.
+            </p>
+
+            <div class="submitted-title">SUBMITTED DETAILS</div>
+
+            <div class="submitted-details">
+                <div class="detail-row">
+                    <span>பெயர்</span>
+                    <strong>${escapeHtml(name)}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>Pincode</span>
+                    <strong>${escapeHtml(pincode)}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>மொபைல்</span>
+                    <strong>+91 ${escapeHtml(mobile)}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>குடும்ப உறுப்பினர்கள்</span>
+                    <strong>${escapeHtml(selectedMembers.join(', ') || '—')}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>அழைக்க வேண்டிய தேதி</span>
+                    <strong>${escapeHtml(callbackDate || '—')}</strong>
+                </div>
+                <div class="detail-row">
+                    <span>விருப்பமான நேரம்</span>
+                    <strong>${escapeHtml(callbackTime || '—')}</strong>
+                </div>
+            </div>
+
+            <div class="assistance">
+                <div>Need immediate assistance?</div>
+                <div class="call-label">CALL US</div>
+                <div class="phone-numbers">
+                    <span>9585 905 905</span>
+                    <i></i>
+                    <span>9363 705 905</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Run secondary calendar/sheet sync after success UI.
+    (async function(){
+    // Create a real CRM calendar appointment from the customer's selected callback date/time.
+    if (callbackDate && callbackTime) {
+        try {
+            const supabaseClient = window.supabase.createClient(
+                'https://cjwxirpwzluynymwjzxl.supabase.co',
+                'sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz'
+            );
+            const appointmentResult = await supabaseClient.rpc('handle_appointment_booking', {
+                p_customer_name: name,
+                p_mobile_number: mobile,
+                p_appointment_date: callbackDate,
+                p_appointment_time: callbackTime,
+                p_source: 'Website Women Care Insurance'
+            });
+            if (appointmentResult.error) {
+                console.error('Health callback appointment save failed:', appointmentResult.error);
+            }
+        } catch (appointmentError) {
+            console.error('Health callback appointment connection failed:', appointmentError);
+        }
+    }
+
+    // Save the same Health Insurance enquiry to Google Sheets + Google Calendar.
+    // The existing Supabase CRM flow above remains unchanged.
+    try {
+        const googleLeadPayload = {
+            product: 'Women Care Insurance',
+            name: name,
+            mobile: mobile,
+            pincode_city: 'Pincode: ' + pincode,
+            family_members: selectedMembers.join(', '),
+            medical_info: medicalInfo,
+            age: '',
+            occupation: '',
+            income: '',
+            existing_cover: '',
+            purpose: '',
+            vehicle_type: '',
+            registration: '',
+            expiry: '',
+            insurance_company: '',
+            insurance_type: '',
+            claim: '',
+            callback_date: callbackDate,
+            callback_time: callbackTime,
+            source: 'Website Women Care Insurance'
+        };
+
+        await fetch(
+            'https://script.google.com/macros/s/AKfycbyOSFOeZZq-UkKyX5TBX7FK7FmEMswDYquskgF6NBzQ1NlOHpNRV5fhnfrr-DyHw0iR4A/exec',
+            {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'text/plain;charset=utf-8'
+                },
+                body: JSON.stringify(googleLeadPayload)
+            }
+        );
+    } catch (googleError) {
+        console.error('Google Sheet/Calendar sync failed:', googleError);
+    }
+
+    })();
+
+});
+</script>
+</body>
+</html>
