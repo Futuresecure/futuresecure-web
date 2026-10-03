@@ -646,6 +646,21 @@ input[type="checkbox"],input[type="radio"]{accent-color:var(--wc-pink)!important
                     <input class="age-input" type="number" min="18" max="100" placeholder="Age">
                 </div>
             </div>
+
+            <div class="member-card full" id="daughterCard">
+                <div class="member-head">
+                    <input type="checkbox" id="daughterCheck" class="member-check">
+                    <span>👧 மகள் (Daughter)</span>
+                </div>
+                <div id="daughters" hidden>
+                    <div class="child-item">
+                        <span class="member-number">1.</span>
+                        <span class="child-name">Daughter 1</span>
+                        <input class="age-input" type="number" min="0" max="30" placeholder="Age">
+                    </div>
+                </div>
+                <button type="button" class="add-child" onclick="addChild('daughter')">+ ADD ANOTHER DAUGHTER</button>
+            </div>
         </div>
     </section>
 
