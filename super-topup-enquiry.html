@@ -1023,120 +1023,203 @@ function getCallbackTime() {
 }
 
 const quoteForm = document.getElementById('quoteForm');
+
+function collectSelectedMembers(form) {
+    const selected = [];
+    form.querySelectorAll('.member-card').forEach(card => {
+        const check = card.querySelector('.member-check');
+        if (!check || !check.checked) return;
+
+        if (check.id === 'sonCheck' || check.id === 'daughterCheck') {
+            const type = check.id === 'sonCheck' ? 'Son' : 'Daughter';
+            const container = document.getElementById(type === 'Son' ? 'sons' : 'daughters');
+            if (container) {
+                container.querySelectorAll('.child-item').forEach((item, index) => {
+                    const age = item.querySelector('.age-input')?.value?.trim() || '';
+                    selected.push(type + ' ' + (index + 1) + (age ? ' (' + age + ')' : ''));
+                });
+            }
+        } else {
+            const label = card.querySelector('.member-head span')?.textContent?.trim() || '';
+            const age = card.querySelector('.age-row .age-input')?.value?.trim() || '';
+            selected.push(label + (age ? ' (' + age + ')' : ''));
+        }
+    });
+    return selected;
+}
+
+function getCallbackTime(form) {
+    const h = form.querySelector('[name="callbackTimeHour"]')?.value?.trim() || '';
+    const m = form.querySelector('[name="callbackTimeMinute"]')?.value?.trim() || '';
+    const p = form.querySelector('[name="callbackTimePeriod"]')?.value?.trim() || '';
+    return h && m && p ? h + ':' + m + ' ' + p : '';
+}
+
 quoteForm.addEventListener('submit', async function (event) {
     event.preventDefault();
-    if (!quoteForm.checkValidity()) {
-        quoteForm.reportValidity();
+    if (!this.checkValidity()) {
+        this.reportValidity();
         return;
     }
 
-    const submitButton = quoteForm.querySelector('button[type="submit"]');
-    const originalText = submitButton.textContent;
-    submitButton.disabled = true;
-    submitButton.textContent = 'Submitting...';
+    const form = this;
+    const selectedChecks = Array.from(form.querySelectorAll('.member-check:checked'));
+    if (!selectedChecks.length) {
+        alert('குறைந்தது ஒரு குடும்ப உறுப்பினரை தேர்வு செய்யவும்.');
+        form.querySelector('.member-check')?.focus();
+        return;
+    }
+
+    let missingAge = null;
+    form.querySelectorAll('.member-card').forEach(card => {
+        const check = card.querySelector('.member-check');
+        if (!check || !check.checked || missingAge) return;
+        if (check.id === 'sonCheck' || check.id === 'daughterCheck') {
+            const type = check.id === 'sonCheck' ? 'sons' : 'daughters';
+            document.querySelectorAll('#' + type + ' .age-input').forEach(input => {
+                if (!String(input.value || '').trim() && !missingAge) missingAge = input;
+            });
+        } else {
+            const input = card.querySelector('.age-row .age-input');
+            if (input && !String(input.value || '').trim()) missingAge = input;
+        }
+    });
+    if (missingAge) {
+        alert('தேர்ந்தெடுத்த ஒவ்வொரு குடும்ப உறுப்பினருக்கும் வயதை உள்ளிடவும்.');
+        missingAge.focus();
+        return;
+    }
+
+    const fd = new FormData(form);
+    const name = String(fd.get('name') || '').trim();
+    const pincode = String(fd.get('pincode') || '').trim();
+    const mobile = String(fd.get('mobile') || '').replace(/\D/g, '');
+    if (!/^[6-9]\d{9}$/.test(mobile)) {
+        alert('சரியான 10 digit mobile number-ஐ உள்ளிடவும்.');
+        return;
+    }
+    if (!/^\d{6}$/.test(pincode)) {
+        alert('சரியான 6 digit PINCODE-ஐ உள்ளிடவும்.');
+        return;
+    }
+
+    const selectedMembers = collectSelectedMembers(form);
+    const medicalYes = form.querySelector('input[name="medical"]:checked')?.value === 'yes';
+    const conditions = Array.from(form.querySelectorAll('input[name="conditions"]:checked')).map(x => x.value);
+    const medicalInfo = medicalYes ? (conditions.length ? conditions.join(', ') : 'ஆம் (Yes)') : 'இல்லை (No)';
+    const existing = form.querySelector('input[name="existingInsurance"]:checked')?.value || 'No';
+    const existingCover = existing === 'Yes' ? String(fd.get('existingSumInsured') || '').trim() : '';
+    const existingInsurer = existing === 'Yes' ? String(fd.get('existingInsurer') || '').trim() : '';
+    const existingExpiry = existing === 'Yes' ? String(fd.get('existingExpiryDate') || '').trim() : '';
+    const callbackDate = String(fd.get('callbackDate') || '').trim();
+    const callbackTime = getCallbackTime(form);
+
+    const button = form.querySelector('button[type="submit"]');
+    const oldText = button.textContent;
+    button.disabled = true;
+    button.textContent = 'Submitting...';
 
     try {
-        const fd = new FormData(quoteForm);
-        const name = String(fd.get('name') || '').trim();
-        const pincode = String(fd.get('pincode') || '').trim();
-        const mobile = String(fd.get('mobile') || '').replace(/\D/g,'');
-        if (!/^[6-9]\d{9}$/.test(mobile)) {
-            alert('சரியான 10 digit mobile number-ஐ உள்ளிடவும்.');
-            return;
-        }
-        if (!/^\d{6}$/.test(pincode)) {
-            alert('சரியான 6 digit PINCODE-ஐ உள்ளிடவும்.');
-            return;
-        }
-
-        const familyMembers = collectFamilyMembers();
-        const medicalYes = document.querySelector('input[name="medical"]:checked')?.value === 'yes';
-        const conditions = [...document.querySelectorAll('input[name="conditions"]:checked')].map(x => x.value);
-        const medicalInfo = medicalYes ? (conditions.length ? conditions.join(', ') : 'Medical condition declared') : 'இல்லை';
-
-        const existing = document.querySelector('input[name="existingInsurance"]:checked')?.value || 'No';
-        const existingCover = existing === 'Yes' ? String(fd.get('existingSumInsured') || '').trim() : '';
-        const existingInsurer = existing === 'Yes' ? String(fd.get('existingInsurer') || '').trim() : '';
-        const existingExpiry = existing === 'Yes' ? String(fd.get('existingExpiryDate') || '').trim() : '';
-        const callbackDate = String(fd.get('callbackDate') || '').trim();
-        const callbackTime = getCallbackTime();
-
         const notes = [
+            'Super Top-Up Insurance Enquiry',
             'Existing Health Insurance: ' + existing,
             existingCover ? 'Existing Cover: ' + existingCover : '',
             existingInsurer ? 'Insurance Company: ' + existingInsurer : '',
             existingExpiry ? 'Policy Expiry: ' + existingExpiry : '',
-            callbackDate ? 'Callback Date: ' + callbackDate : '',
-            callbackTime ? 'Callback Time: ' + callbackTime : '',
+            'Callback Date: ' + (callbackDate || ''),
+            'Callback Time: ' + (callbackTime || ''),
             'Consent: Yes'
         ].filter(Boolean).join(' | ');
 
-        // CRM / Supabase
-        if (typeof window.saveFspLead !== 'function') throw new Error('CRM connection is not available.');
+        if (typeof window.saveFspLead !== 'function') throw new Error('CRM connection unavailable');
+
         const crmResult = await window.saveFspLead({
+            product: 'Super Top-Up Insurance',
             full_name: name,
             mobile_number: mobile,
+            city: 'Pincode: ' + pincode,
             pincode: pincode,
-            city: '',
-            family_members: familyMembers.join(', '),
+            family_members: selectedMembers.join(', '),
             medical_info: medicalInfo,
-            product: 'Super Top-Up Insurance',
-            lead_source: 'Website',
             notes: notes
         });
-        if (!crmResult || !crmResult.success) {
-            throw new Error((crmResult && crmResult.error) || 'CRM save failed');
+        if (!crmResult.success) throw new Error(crmResult.error || 'CRM save failed');
+
+        // Callback appointment in CRM, same pattern as Women Care.
+        if (callbackDate && callbackTime && window.supabase?.createClient) {
+            try {
+                const sc = window.supabase.createClient(
+                    'https://cjwxirpwzluynymwjzxl.supabase.co',
+                    'sb_publishable_jkr9U6yu6ODDa4JvHmrE4w_gIWJBsOz'
+                );
+                const ar = await sc.rpc('handle_appointment_booking', {
+                    p_customer_name: name,
+                    p_mobile_number: mobile,
+                    p_appointment_date: callbackDate,
+                    p_appointment_time: callbackTime,
+                    p_source: 'Website Super Top-Up Insurance'
+                });
+                if (ar.error) console.error('Super Top-Up appointment save failed:', ar.error);
+            } catch (appointmentError) {
+                console.error('Super Top-Up appointment connection failed:', appointmentError);
+            }
         }
 
-        // Google Sheet (same endpoint used by Women Care / website enquiries)
-        const googleLeadPayload = {
-            product: 'Super Top-Up Insurance',
-            name: name,
-            mobile: mobile,
-            pincode_city: 'Pincode: ' + pincode,
-            family_members: familyMembers.join(', '),
-            medical_info: medicalInfo,
-            age: '',
-            occupation: '',
-            income: '',
-            existing_cover: existingCover,
-            purpose: 'Super Top-Up Insurance',
-            vehicle_type: '',
-            registration: '',
-            expiry: existingExpiry,
-            insurance_company: existingInsurer,
-            insurance_type: 'Super Top-Up Insurance',
-            claim: '',
-            callback_date: callbackDate,
-            callback_time: callbackTime,
-            source: 'Website Super Top-Up Insurance'
-        };
+        // Google Sheet / Calendar sync. no-cors fetch is fire-and-forget, so do not block CRM success.
+        try {
+            await fetch(
+                'https://script.google.com/macros/s/AKfycbyOSFOeZZq-UkKyX5TBX7FK7FmEMswDYquskgF6NBzQ1NlOHpNRV5fhnfrr-DyHw0iR4A/exec',
+                {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {'Content-Type':'text/plain;charset=utf-8'},
+                    body: JSON.stringify({
+                        product: 'Super Top-Up Insurance',
+                        name: name,
+                        mobile: mobile,
+                        pincode_city: 'Pincode: ' + pincode,
+                        family_members: selectedMembers.join(', '),
+                        medical_info: medicalInfo,
+                        age: '',
+                        occupation: '',
+                        income: '',
+                        existing_cover: existingCover,
+                        purpose: 'Super Top-Up Insurance',
+                        vehicle_type: '',
+                        registration: '',
+                        expiry: existingExpiry,
+                        insurance_company: existingInsurer,
+                        insurance_type: 'Super Top-Up Insurance',
+                        claim: '',
+                        callback_date: callbackDate,
+                        callback_time: callbackTime,
+                        source: 'Website Super Top-Up Insurance'
+                    })
+                }
+            );
+        } catch (googleError) {
+            console.error('Super Top-Up Google sync failed:', googleError);
+        }
 
-        await fetch('https://script.google.com/macros/s/AKfycbyOSFOeZZq-UkKyX5TBX7FK7FmEMswDYquskgF6NBzQ1NlOHpNRV5fhnfrr-DyHw0iR4A/exec', {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {'Content-Type':'text/plain;charset=utf-8'},
-            body: JSON.stringify(googleLeadPayload)
-        });
-
-        quoteForm.innerHTML = `
+        form.innerHTML = `
           <div class="confirmation">
             <div class="success-icon">✓</div>
             <div class="celebrate">🎉</div>
             <h1>Super Top-Up Enquiry வெற்றிகரமாக பதிவு செய்யப்பட்டது.</h1>
-            <p class="confirmation-text">உங்கள் விவரங்கள் Future Secure Providers-க்கு கிடைத்துவிட்டது. Advisor உங்களை தொடர்பு கொள்வார்.</p>
+            <p class="confirmation-text">உங்கள் enquiry பெறப்பட்டுள்ளது. எங்கள் Insurance Advisor விரைவில் உங்களைத் தொடர்புகொள்வார்.</p>
             <div class="submitted-details">
               <div class="detail-row"><span>பெயர்</span><strong>${escapeHtml(name)}</strong></div>
-              <div class="detail-row"><span>மொபைல்</span><strong>${escapeHtml(mobile)}</strong></div>
+              <div class="detail-row"><span>Pincode</span><strong>${escapeHtml(pincode)}</strong></div>
+              <div class="detail-row"><span>மொபைல்</span><strong>+91 ${escapeHtml(mobile)}</strong></div>
               <div class="detail-row"><span>Insurance</span><strong>Super Top-Up Insurance</strong></div>
             </div>
             <div class="assistance">Future Secure Providers : Call 9585 905 905, 9363 705 905.</div>
           </div>`;
     } catch (error) {
         console.error('Super Top-Up enquiry submit failed:', error);
-        alert('Enquiry submit ஆகவில்லை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.');
-        submitButton.disabled = false;
-        submitButton.textContent = originalText;
+        alert('Enquiry save ஆகவில்லை. தயவுசெய்து மீண்டும் முயற்சி செய்யவும்.');
+        button.disabled = false;
+        button.textContent = oldText;
     }
 });
 </script>
