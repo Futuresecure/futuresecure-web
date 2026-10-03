@@ -15,7 +15,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="preconnect" href="https://cjwxirpwzluynymwjzxl.supabase.co" crossorigin>
 <link rel="icon" type="image/x-icon" href="../pwa-icon.svg">
-<link rel="manifest" href="./manifest.json?v=39">
+<link rel="manifest" href="./manifest.json?v=40">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
@@ -74,7 +74,7 @@ button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer}.btn-primary{
 
 /* WHATSAPP INBOX */
 .wa-inbox-card{overflow:hidden}
-.wa-layout{display:grid;grid-template-columns:320px minmax(0,1fr);height:clamp(520px,calc(100dvh - 260px),720px);min-height:0;max-height:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff}.wa-list{border-right:1px solid var(--border);overflow-y:auto;background:#f8fafc}.wa-list-head{padding:16px;border-bottom:1px solid var(--border);background:#fff}.wa-contact{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}.wa-contact:hover,.wa-contact.active{background:#eaf6f4}.wa-contact-name{font-weight:700;margin-bottom:4px}.wa-contact-meta{font-size:12px;color:var(--muted)}.wa-chat{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;min-width:0;min-height:0;height:100%;overflow:hidden}.wa-chat-head{padding:16px 18px;border-bottom:1px solid var(--border);min-width:0}.wa-messages{min-height:0;height:100%;overflow-y:scroll;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:20px;background:#eef2f3}.wa-bubble{max-width:78%;padding:10px 12px;border-radius:10px;margin-bottom:10px;background:#fff;white-space:pre-wrap;overflow-wrap:anywhere}.wa-bubble.outbound{margin-left:auto;background:#d9fdd3}.wa-time{display:block;text-align:right;font-size:10px;color:var(--muted);margin-top:5px}.wa-placeholder{margin:auto;color:var(--muted);text-align:center;padding:30px}@media(max-width:768px){.wa-layout{grid-template-columns:1fr;height:calc(100dvh - 170px);min-height:420px;max-height:none}.wa-list{border-right:0}.wa-chat{display:none}.wa-layout.chat-open .wa-list{display:none}.wa-layout.chat-open .wa-chat{display:flex}}
+.wa-layout{display:grid;grid-template-columns:320px minmax(0,1fr);height:clamp(520px,calc(100dvh - 260px),720px);min-height:0;max-height:none;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:#fff}.wa-list{border-right:1px solid var(--border);overflow-y:auto;background:#f8fafc}.wa-list-head{padding:16px;border-bottom:1px solid var(--border);background:#fff}.wa-contact{padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}.wa-contact:hover,.wa-contact.active{background:#eaf6f4}.wa-contact-name{font-weight:700;margin-bottom:4px}.wa-contact-meta{font-size:12px;color:var(--muted)}.wa-chat{display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;min-width:0;min-height:0;height:100%;overflow:hidden}.wa-chat-head{padding:16px 18px;border-bottom:1px solid var(--border);min-width:0}.wa-messages{min-height:0;height:100%;overflow-y:scroll;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:20px;background:#eef2f3}.wa-bubble{max-width:78%;padding:10px 12px;border-radius:10px;margin-bottom:10px;background:#fff;white-space:pre-wrap;overflow-wrap:anywhere}.wa-bubble.outbound{margin-left:auto;background:#d9fdd3}.wa-time{display:block;text-align:right;font-size:10px;color:var(--muted);margin-top:5px}.wa-msg-delete{border:0;background:transparent;color:#9ca3af;font-size:13px;line-height:1;padding:3px 0 0 8px;cursor:pointer;float:right}.wa-msg-delete:hover{color:#dc2626}.wa-placeholder{margin:auto;color:var(--muted);text-align:center;padding:30px}@media(max-width:768px){.wa-layout{grid-template-columns:1fr;height:calc(100dvh - 170px);min-height:420px;max-height:none}.wa-list{border-right:0}.wa-chat{display:none}.wa-layout.chat-open .wa-list{display:none}.wa-layout.chat-open .wa-chat{display:flex}}
 .wa-composer{display:flex;flex:0 0 auto;gap:10px;padding:12px;border-top:1px solid var(--border);background:#fff;position:relative;z-index:2}.wa-composer textarea{flex:1 1 auto;min-width:0;height:44px;min-height:44px;max-height:88px;resize:none;overflow-y:auto}.wa-composer button{min-width:86px}.wa-send-status{font-size:12px;flex:0 0 auto;background:#fff;color:var(--muted);position:relative;z-index:2}.wa-send-status:empty{display:none}.wa-send-status:not(:empty){padding:6px 12px 10px}@media(max-width:768px){.wa-composer{padding:10px;gap:8px}.wa-composer button{min-width:70px}}
 </style>
 </head>
@@ -2035,9 +2035,15 @@ async function openWhatsAppConversation(waId){
  const back=document.getElementById("waBackBtn");if(window.innerWidth>768)back.style.display="none";
  document.querySelectorAll(".wa-contact").forEach(el=>el.classList.toggle("active",el.dataset.wa===waId));
  const box=document.getElementById("waMessages");box.innerHTML='<div class="wa-placeholder">Loading...</div>';
- const {data,error}=await supabaseClient.from("whatsapp_messages").select("direction,message_type,message_text,message_timestamp,created_at,delivery_status,status_timestamp,read_at").eq("wa_id",waId).order("message_timestamp",{ascending:true});
+ const {data,error}=await supabaseClient.from("whatsapp_messages").select("id,direction,message_type,message_text,message_timestamp,created_at,delivery_status,status_timestamp,read_at").eq("wa_id",waId).order("message_timestamp",{ascending:true});
  if(error){box.innerHTML='<div class="wa-placeholder">Unable to load messages.</div>';console.error(error);return}
- box.innerHTML=(data||[]).map(m=>'<div class="wa-bubble '+(m.direction==="outbound"?"outbound":"")+'">'+(m.message_text?escapeHtml(m.message_text):'<em>['+escapeHtml(m.message_type)+' message]</em>')+'<span class="wa-time">'+escapeHtml(formatWhatsAppTime(m.message_timestamp||m.created_at))+escapeHtml(waStatusLabel(m))+'</span></div>').join("")||'<div class="wa-placeholder">No messages.</div>';box.scrollTop=box.scrollHeight;
+ box.innerHTML=(data||[]).map(m=>'<div class="wa-bubble '+(m.direction==="outbound"?"outbound":"")+'" data-message-id="'+m.id+'">'+(m.message_text?escapeHtml(m.message_text):'<em>['+escapeHtml(m.message_type)+' message]</em>')+'<button class="wa-msg-delete" type="button" title="Delete from CRM" onclick="deleteWhatsAppMessage('+m.id+')">🗑️</button><span class="wa-time">'+escapeHtml(formatWhatsAppTime(m.message_timestamp||m.created_at))+escapeHtml(waStatusLabel(m))+'</span></div>').join("")||'<div class="wa-placeholder">No messages.</div>';box.scrollTop=box.scrollHeight;
+}
+async function deleteWhatsAppMessage(id){
+ if(!confirm("Delete this message from CRM Inbox?\n\nThis will not delete the message from the customer's WhatsApp."))return;
+ const {error}=await supabaseClient.rpc("delete_whatsapp_message",{p_message_id:id});
+ if(error){alert("Unable to delete message: "+error.message);return;}
+ const el=document.querySelector('.wa-bubble[data-message-id="'+id+'"]');if(el)el.remove();
 }
 function closeWhatsAppConversation(){document.getElementById("waLayout").classList.remove("chat-open");currentWhatsAppWaId=null;const composer=document.getElementById("waComposer");if(composer)composer.style.display="none"}
 function startWhatsAppAutoRefresh(){
@@ -2150,7 +2156,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=39', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=40', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
