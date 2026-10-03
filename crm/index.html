@@ -12,9 +12,11 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="FSP CRM">
 <link rel="apple-touch-icon" href="./logo.jpg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://cjwxirpwzluynymwjzxl.supabase.co" crossorigin>
 <link rel="icon" type="image/x-icon" href="./logo.jpg">
-<link rel="manifest" href="./manifest.json?v=37">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="manifest" href="./manifest.json?v=38">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:Arial,sans-serif}
 :root{--sidebar:#172238;--primary:#247d78;--primary-dark:#1c6763;--bg:#f4f6f9;--card:#fff;--text:#273142;--muted:#6b7280;--border:#e5e7eb;--danger:#dc2626}
@@ -79,7 +81,7 @@ button{border:0;border-radius:8px;padding:10px 14px;cursor:pointer}.btn-primary{
 <body>
 <div class="app">
 <aside class="sidebar">
-<div class="brand"><img src="./logo.jpg" alt="Future Secure Providers" style="width:100%;max-width:80px;height:auto;margin-bottom:8px;border-radius:6px;">Future Secure<br>Providers<span>CRM SYSTEM</span></div>
+<div class="brand"><img src="./logo.jpg" alt="Future Secure Providers" width="80" height="80" decoding="async" style="width:100%;max-width:80px;height:auto;margin-bottom:8px;border-radius:6px;">Future Secure<br>Providers<span>CRM SYSTEM</span></div>
 <div class="menu-label">MAIN MENU</div>
 <div class="nav-item active" data-page="dashboard" onclick="showPage('dashboard',this)">📊 Dashboard</div>
 <div class="nav-item" data-page="leads" onclick="showPage('leads',this);loadLeads()">👥 Leads</div>
@@ -361,7 +363,9 @@ async function loadCRMData(){
  if(Date.now()-lastCRMDataLoadAt<3000)return;
  crmDataLoadPromise=(async()=>{
   await loadLeads();
-  await loadSmartDashboard(allLeadsCache);
+  // Dashboard is usable as soon as leads arrive. Load secondary dashboard data
+  // without blocking first render.
+  loadSmartDashboard(allLeadsCache).catch(err=>console.error("Dashboard background load:",err));
   lastCRMDataLoadAt=Date.now();
  })().finally(()=>{crmDataLoadPromise=null});
  return crmDataLoadPromise;
@@ -2146,7 +2150,7 @@ document.querySelectorAll('.nav-item').forEach(item=>{item.addEventListener('cli
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const registration = await navigator.serviceWorker.register('./service-worker.js?v=37', { scope: './', updateViaCache: 'none' });
+      const registration = await navigator.serviceWorker.register('./service-worker.js?v=38', { scope: './', updateViaCache: 'none' });
       await registration.update();
       if (registration.waiting) registration.waiting.postMessage({ type: 'SKIP_WAITING' });
       registration.addEventListener('updatefound', () => {
